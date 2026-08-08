@@ -1,22 +1,21 @@
 import { useState } from "react";
-import authService from "../../services/authService";
+import useAuth from "../../hooks/useAuth";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
+  const { login } = useAuth();
+
   async function handleSubmit(event) {
     event.preventDefault();
     setMessage("");
 
     try {
-      const data = await authService.login(email, password);
-
-      console.log(data);
+      await login(email, password);
       setMessage("Login successful");
-    } catch (error) {
-      console.error(error);
+    } catch {
       setMessage("Login failed");
     }
   }
