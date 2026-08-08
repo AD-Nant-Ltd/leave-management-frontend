@@ -1,6 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter } from "react-router-dom";
+import {
+  MemoryRouter,
+  Routes,
+  Route,
+} from "react-router-dom";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import LoginPage from "../../../pages/auth/LoginPage";
 
@@ -90,7 +94,9 @@ describe("LoginPage", () => {
   test("shows an error when authentication fails", async () => {
     const user = userEvent.setup();
 
-    mockLogin.mockRejectedValue(new Error("Invalid credentials"));
+    mockLogin.mockRejectedValue(
+      new Error("Invalid credentials")
+    );
 
     renderLoginPage();
 
@@ -110,6 +116,44 @@ describe("LoginPage", () => {
 
     expect(
       await screen.findByRole("alert")
-    ).toHaveTextContent("Invalid email address or password.");
+    ).toHaveTextContent(
+      "Invalid email address or password."
+    );
+  });
+
+  test("redirects to dashboard after successful login", async () => {
+    const user = userEvent.setup();
+
+    mockLogin.mockResolvedValue({});
+
+    render(
+      <MemoryRouter initialEntries={["/"]}>
+        <Routes>
+          <Route path="/" element={<LoginPage />} />
+          <Route
+            path="/dashboard"
+            element={<p>Dashboard Page</p>}
+          />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    await user.type(
+      screen.getByLabelText(/email address/i),
+      "user@example.com"
+    );
+
+    await user.type(
+      screen.getByLabelText(/password/i),
+      "password123"
+    );
+
+    await user.click(
+      screen.getByRole("button", { name: /sign in/i })
+    );
+
+    expect(
+      await screen.findByText("Dashboard Page")
+    ).toBeInTheDocument();
   });
 });
