@@ -3,10 +3,8 @@ import PublicLayout from "../layouts/PublicLayout";
 import AppLayout from "../layouts/AppLayout";
 import ProtectedRoute from "./ProtectedRoute";
 import LoginPage from "../pages/auth/LoginPage";
+import DashboardPage from "../pages/employee/DashboardPage";
 
-function DashboardPage() {
-  return <h2>Dashboard Page</h2>;
-}
 
 function AppRoutes() {
   return (
