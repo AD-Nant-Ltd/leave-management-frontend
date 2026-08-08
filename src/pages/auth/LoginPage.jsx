@@ -1,16 +1,24 @@
 import { useState } from "react";
+import authService from "../../services/authService";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
+    setMessage("");
 
-    console.log({
-      email,
-      password,
-    });
+    try {
+      const data = await authService.login(email, password);
+
+      console.log(data);
+      setMessage("Login successful");
+    } catch (error) {
+      console.error(error);
+      setMessage("Login failed");
+    }
   }
 
   return (
@@ -54,6 +62,8 @@ function LoginPage() {
               Sign in
             </button>
           </form>
+
+          {message && <p className="mt-3">{message}</p>}
         </div>
       </div>
     </div>
