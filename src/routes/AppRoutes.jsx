@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import PublicLayout from "../layouts/PublicLayout";
 import AppLayout from "../layouts/AppLayout";
+import ProtectedRoute from "./ProtectedRoute";
 import LoginPage from "../pages/auth/LoginPage";
 
 function DashboardPage() {
@@ -14,8 +15,10 @@ function AppRoutes() {
         <Route path="/" element={<LoginPage />} />
       </Route>
 
-      <Route element={<AppLayout />}>
-        <Route path="/dashboard" element={<DashboardPage />} />
+      <Route element={<ProtectedRoute />}>
+        <Route element={<AppLayout />}>
+          <Route path="/dashboard" element={<DashboardPage />} />
+        </Route>
       </Route>
     </Routes>
   );
