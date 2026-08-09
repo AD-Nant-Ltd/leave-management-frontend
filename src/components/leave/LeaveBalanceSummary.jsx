@@ -1,9 +1,17 @@
+import { Link } from "react-router-dom";
+
 function LeaveBalanceSummary({ balance }) {
   return (
     <section aria-labelledby="leave-balance-heading">
-      <h2 id="leave-balance-heading" className="h4 mb-3">
-        Leave Balance
-      </h2>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h2 id="leave-balance-heading" className="h4 mb-0">
+          Leave Balance
+        </h2>
+
+        <Link to="/leave/request" className="btn btn-primary">
+          Request Leave
+        </Link>
+      </div>
 
       <div className="row g-3">
         <div className="col-12 col-md-4">

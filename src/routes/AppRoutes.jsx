@@ -4,7 +4,7 @@ import AppLayout from "../layouts/AppLayout";
 import ProtectedRoute from "./ProtectedRoute";
 import LoginPage from "../pages/auth/LoginPage";
 import DashboardPage from "../pages/employee/DashboardPage";
-
+import RequestLeavePage from "../pages/employee/RequestLeavePage";
 
 function AppRoutes() {
   return (
@@ -16,6 +16,7 @@ function AppRoutes() {
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/leave/request" element={<RequestLeavePage />} />
         </Route>
       </Route>
     </Routes>
