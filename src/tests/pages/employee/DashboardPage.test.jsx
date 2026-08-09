@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import DashboardPage from "../../../pages/employee/DashboardPage";
 
@@ -16,6 +17,14 @@ vi.mock("../../../services/leaveService", () => ({
   },
 }));
 
+function renderDashboardPage() {
+  return render(
+    <MemoryRouter>
+      <DashboardPage />
+    </MemoryRouter>
+  );
+}
+
 describe("DashboardPage", () => {
   beforeEach(() => {
     mockGetLeaveBalance.mockReset();
@@ -24,7 +33,7 @@ describe("DashboardPage", () => {
   test("shows a loading message while leave balance is being retrieved", () => {
     mockGetLeaveBalance.mockReturnValue(new Promise(() => {}));
 
-    render(<DashboardPage />);
+    renderDashboardPage();
 
     expect(
       screen.getByText(/loading leave balance/i)
@@ -38,7 +47,7 @@ describe("DashboardPage", () => {
       days_remaining: 20,
     });
 
-    render(<DashboardPage />);
+    renderDashboardPage();
 
     expect(
       await screen.findByRole("heading", { name: /leave balance/i })
@@ -59,6 +68,10 @@ describe("DashboardPage", () => {
     expect(screen.getByText("25")).toBeInTheDocument();
     expect(screen.getByText("5")).toBeInTheDocument();
     expect(screen.getByText("20")).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("link", { name: /request leave/i })
+    ).toBeInTheDocument();
   });
 
   test("retrieves the leave balance using the authenticated token", async () => {
@@ -68,7 +81,7 @@ describe("DashboardPage", () => {
       days_remaining: 20,
     });
 
-    render(<DashboardPage />);
+    renderDashboardPage();
 
     await screen.findByText("25");
 
@@ -81,7 +94,7 @@ describe("DashboardPage", () => {
       new Error("API unavailable")
     );
 
-    render(<DashboardPage />);
+    renderDashboardPage();
 
     expect(
       await screen.findByRole("alert")
