@@ -8,9 +8,16 @@ function LeaveBalanceSummary({ balance }) {
           Leave Balance
         </h2>
 
-        <Link to="/leave/request" className="btn btn-primary">
-          Request Leave
-        </Link>
+
+        <div className="d-flex gap-2">
+          <Link to="/leave/requests" className="btn btn-outline-primary">
+            My Requests
+          </Link>
+
+          <Link to="/leave/request" className="btn btn-primary">
+            Request Leave
+          </Link>
+        </div>
       </div>
 
       <div className="row g-3">

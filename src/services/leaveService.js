@@ -27,9 +27,20 @@ async function createLeaveRequest(token, startDate, endDate) {
   return response.data;
 }
 
+async function getLeaveRequests(token) {
+  const response = await apiClient.get("/leave-requests", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data.data;
+}
+
 const leaveService = {
   getLeaveBalance,
   createLeaveRequest,
+  getLeaveRequests,
 };
 
 export default leaveService;
