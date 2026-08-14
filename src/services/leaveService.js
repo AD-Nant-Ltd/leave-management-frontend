@@ -37,10 +37,24 @@ async function getLeaveRequests(token) {
   return response.data.data;
 }
 
+async function cancelLeaveRequest(token, leaveRequestId) {
+  const response = await apiClient.delete("/leave-requests", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {
+      leave_request_id: leaveRequestId,
+    },
+  });
+
+  return response.data;
+}
+
 const leaveService = {
   getLeaveBalance,
   createLeaveRequest,
   getLeaveRequests,
+  cancelLeaveRequest,
 };
 
 export default leaveService;

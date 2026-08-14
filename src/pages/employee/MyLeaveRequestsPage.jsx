@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import leaveService from "../../services/leaveService";
+import ConfirmationModal from "../../components/common/ConfirmationModal";
 
 function formatDate(date) {
   return new Intl.DateTimeFormat("en-GB", {
@@ -17,6 +18,8 @@ function MyLeaveRequestsPage() {
   const [requests, setRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [cancellingId, setCancellingId] = useState(null);
+  const [requestToCancel, setRequestToCancel] = useState(null);
 
   useEffect(() => {
     async function loadLeaveRequests() {
@@ -32,6 +35,49 @@ function MyLeaveRequestsPage() {
 
     loadLeaveRequests();
   }, [token]);
+
+  async function handleCancel() {
+    if (!requestToCancel) {
+      return;
+    }
+
+    setError("");
+    setCancellingId(requestToCancel.id);
+
+    try {
+      await leaveService.cancelLeaveRequest(
+        token,
+        requestToCancel.id
+      );
+
+      setRequests((currentRequests) =>
+        currentRequests.map((currentRequest) =>
+          currentRequest.id === requestToCancel.id
+            ? { ...currentRequest, status: "Cancelled" }
+            : currentRequest
+        )
+      );
+
+      setRequestToCancel(null);
+    } catch (error) {
+      const apiMessage =
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        "Unable to cancel leave request.";
+
+      setError(apiMessage);
+    } finally {
+      setCancellingId(null);
+    }
+  }
+
+  function handleCloseModal() {
+    if (cancellingId !== null) {
+      return;
+    }
+
+    setRequestToCancel(null);
+  }
 
   return (
     <div>
@@ -65,6 +111,7 @@ function MyLeaveRequestsPage() {
                 <th scope="col">Start Date</th>
                 <th scope="col">End Date</th>
                 <th scope="col">Status</th>
+                <th scope="col">Actions</th>
               </tr>
             </thead>
 
@@ -74,12 +121,41 @@ function MyLeaveRequestsPage() {
                   <td>{formatDate(request.start_date)}</td>
                   <td>{formatDate(request.end_date)}</td>
                   <td>{request.status}</td>
+
+                  <td>
+                    {request.status === "Pending" && (
+                      <button
+                        type="button"
+                        className="btn btn-outline-danger btn-sm"
+                        onClick={() => setRequestToCancel(request)}
+                        disabled={cancellingId === request.id}
+                      >
+                        {cancellingId === request.id
+                          ? "Cancelling..."
+                          : "Cancel"}
+                      </button>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       )}
+
+      <ConfirmationModal
+        show={requestToCancel !== null}
+        title="Cancel Leave Request"
+        message="Are you sure you want to cancel this leave request?"
+        confirmLabel="Cancel Leave"
+        cancelLabel="Keep Request"
+        onConfirm={handleCancel}
+        onCancel={handleCloseModal}
+        isProcessing={
+          requestToCancel !== null &&
+          cancellingId === requestToCancel.id
+        }
+      />
     </div>
   );
 }
