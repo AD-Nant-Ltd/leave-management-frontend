@@ -92,32 +92,48 @@ function OutstandingLeaveRequestsPage() {
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1 className="mb-0">Outstanding Leave Requests</h1>
 
-        <Link to="/dashboard" className="btn btn-outline-secondary">
+        <Link
+          to="/dashboard"
+          className="btn btn-outline-secondary"
+        >
           Back to Dashboard
         </Link>
       </div>
 
       {success && (
-        <div className="alert alert-success" role="status">
+        <div
+          className="alert alert-success"
+          role="status"
+        >
           {success}
         </div>
       )}
 
-      {isLoading && <p>Loading outstanding leave requests...</p>}
+      {isLoading && (
+        <p>Loading outstanding leave requests...</p>
+      )}
 
       {error && (
-        <div className="alert alert-danger" role="alert">
+        <div
+          className="alert alert-danger"
+          role="alert"
+        >
           {error}
         </div>
       )}
 
-      {!isLoading && !error && requests.length === 0 && (
-        <div className="alert alert-info" role="status">
-          There are no outstanding leave requests.
-        </div>
-      )}
+      {!isLoading &&
+        !error &&
+        requests.length === 0 && (
+          <div
+            className="alert alert-info"
+            role="status"
+          >
+            There are no outstanding leave requests.
+          </div>
+        )}
 
-      {!isLoading && !error && requests.length > 0 && (
+      {!isLoading && requests.length > 0 && (
         <div className="table-responsive">
           <table className="table table-striped align-middle">
             <thead>
@@ -134,17 +150,30 @@ function OutstandingLeaveRequestsPage() {
               {requests.map((request) => (
                 <tr key={request.id}>
                   <td>
-                    {request.user.first_name} {request.user.surname}
+                    {request.user.first_name}{" "}
+                    {request.user.surname}
                   </td>
-                  <td>{formatDate(request.start_date)}</td>
-                  <td>{formatDate(request.end_date)}</td>
+
+                  <td>
+                    {formatDate(request.start_date)}
+                  </td>
+
+                  <td>
+                    {formatDate(request.end_date)}
+                  </td>
+
                   <td>{request.status}</td>
+
                   <td>
                     <button
                       type="button"
                       className="btn btn-success btn-sm"
-                      onClick={() => setRequestToApprove(request)}
-                      disabled={approvingId === request.id}
+                      onClick={() =>
+                        setRequestToApprove(request)
+                      }
+                      disabled={
+                        approvingId === request.id
+                      }
                     >
                       {approvingId === request.id
                         ? "Approving..."
