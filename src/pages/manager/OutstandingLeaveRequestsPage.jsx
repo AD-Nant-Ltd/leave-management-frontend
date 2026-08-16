@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import managerService from "../../services/managerService";
+import ConfirmationModal from "../../components/common/ConfirmationModal";
 
 function formatDate(date) {
   return new Intl.DateTimeFormat("en-GB", {
@@ -17,6 +18,9 @@ function OutstandingLeaveRequestsPage() {
   const [requests, setRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [requestToApprove, setRequestToApprove] = useState(null);
+  const [approvingId, setApprovingId] = useState(null);
 
   useEffect(() => {
     async function loadOutstandingRequests() {
@@ -40,6 +44,49 @@ function OutstandingLeaveRequestsPage() {
     loadOutstandingRequests();
   }, [token]);
 
+  async function handleApprove() {
+    if (!requestToApprove) {
+      return;
+    }
+
+    setError("");
+    setSuccess("");
+    setApprovingId(requestToApprove.id);
+
+    try {
+      const response = await managerService.approveLeaveRequest(
+        token,
+        requestToApprove.id
+      );
+
+      setRequests((currentRequests) =>
+        currentRequests.filter(
+          (request) => request.id !== requestToApprove.id
+        )
+      );
+
+      setSuccess(response.message);
+      setRequestToApprove(null);
+    } catch (error) {
+      const apiMessage =
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        "Unable to approve leave request.";
+
+      setError(apiMessage);
+    } finally {
+      setApprovingId(null);
+    }
+  }
+
+  function handleCloseModal() {
+    if (approvingId !== null) {
+      return;
+    }
+
+    setRequestToApprove(null);
+  }
+
   return (
     <div>
       <div className="d-flex justify-content-between align-items-center mb-4">
@@ -49,6 +96,12 @@ function OutstandingLeaveRequestsPage() {
           Back to Dashboard
         </Link>
       </div>
+
+      {success && (
+        <div className="alert alert-success" role="status">
+          {success}
+        </div>
+      )}
 
       {isLoading && <p>Loading outstanding leave requests...</p>}
 
@@ -73,6 +126,7 @@ function OutstandingLeaveRequestsPage() {
                 <th scope="col">Start Date</th>
                 <th scope="col">End Date</th>
                 <th scope="col">Status</th>
+                <th scope="col">Actions</th>
               </tr>
             </thead>
 
@@ -85,12 +139,38 @@ function OutstandingLeaveRequestsPage() {
                   <td>{formatDate(request.start_date)}</td>
                   <td>{formatDate(request.end_date)}</td>
                   <td>{request.status}</td>
+                  <td>
+                    <button
+                      type="button"
+                      className="btn btn-success btn-sm"
+                      onClick={() => setRequestToApprove(request)}
+                      disabled={approvingId === request.id}
+                    >
+                      {approvingId === request.id
+                        ? "Approving..."
+                        : "Approve"}
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       )}
+
+      <ConfirmationModal
+        show={requestToApprove !== null}
+        title="Approve Leave Request"
+        message="Are you sure you want to approve this leave request?"
+        confirmLabel="Approve Leave"
+        cancelLabel="Keep Pending"
+        onConfirm={handleApprove}
+        onCancel={handleCloseModal}
+        isProcessing={
+          requestToApprove !== null &&
+          approvingId === requestToApprove.id
+        }
+      />
     </div>
   );
 }
