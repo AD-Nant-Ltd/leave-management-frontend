@@ -29,9 +29,27 @@ async function approveLeaveRequest(token, leaveRequestId) {
   return response.data;
 }
 
+async function rejectLeaveRequest(token, leaveRequestId, reason = "") {
+  const response = await apiClient.patch(
+    "/leave-requests/reject",
+    {
+      leave_request_id: leaveRequestId,
+      reason: reason || null,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return response.data;
+}
+
 const managerService = {
   getOutstandingLeaveRequests,
   approveLeaveRequest,
+  rejectLeaveRequest,
 };
 
 export default managerService;

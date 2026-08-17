@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import managerService from "../../services/managerService";
 import ConfirmationModal from "../../components/common/ConfirmationModal";
+import RejectLeaveModal from "../../components/manager/RejectLeaveModal";
 
 function formatDate(date) {
   return new Intl.DateTimeFormat("en-GB", {
@@ -19,8 +20,12 @@ function OutstandingLeaveRequestsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
   const [requestToApprove, setRequestToApprove] = useState(null);
   const [approvingId, setApprovingId] = useState(null);
+
+  const [requestToReject, setRequestToReject] = useState(null);
+  const [rejectingId, setRejectingId] = useState(null);
 
   useEffect(() => {
     async function loadOutstandingRequests() {
@@ -79,12 +84,56 @@ function OutstandingLeaveRequestsPage() {
     }
   }
 
-  function handleCloseModal() {
+  function handleCloseApproveModal() {
     if (approvingId !== null) {
       return;
     }
 
     setRequestToApprove(null);
+  }
+
+  async function handleReject(reason) {
+    if (!requestToReject) {
+      return;
+    }
+
+    setError("");
+    setSuccess("");
+    setRejectingId(requestToReject.id);
+
+    try {
+      const response = await managerService.rejectLeaveRequest(
+        token,
+        requestToReject.id,
+        reason
+      );
+
+      setRequests((currentRequests) =>
+        currentRequests.filter(
+          (request) => request.id !== requestToReject.id
+        )
+      );
+
+      setSuccess(response.message);
+      setRequestToReject(null);
+    } catch (error) {
+      const apiMessage =
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        "Unable to reject leave request.";
+
+      setError(apiMessage);
+    } finally {
+      setRejectingId(null);
+    }
+  }
+
+  function handleCloseRejectModal() {
+    if (rejectingId !== null) {
+      return;
+    }
+
+    setRequestToReject(null);
   }
 
   return (
@@ -101,10 +150,7 @@ function OutstandingLeaveRequestsPage() {
       </div>
 
       {success && (
-        <div
-          className="alert alert-success"
-          role="status"
-        >
+        <div className="alert alert-success" role="status">
           {success}
         </div>
       )}
@@ -114,10 +160,7 @@ function OutstandingLeaveRequestsPage() {
       )}
 
       {error && (
-        <div
-          className="alert alert-danger"
-          role="alert"
-        >
+        <div className="alert alert-danger" role="alert">
           {error}
         </div>
       )}
@@ -125,10 +168,7 @@ function OutstandingLeaveRequestsPage() {
       {!isLoading &&
         !error &&
         requests.length === 0 && (
-          <div
-            className="alert alert-info"
-            role="status"
-          >
+          <div className="alert alert-info" role="status">
             There are no outstanding leave requests.
           </div>
         )}
@@ -154,31 +194,46 @@ function OutstandingLeaveRequestsPage() {
                     {request.user.surname}
                   </td>
 
-                  <td>
-                    {formatDate(request.start_date)}
-                  </td>
+                  <td>{formatDate(request.start_date)}</td>
 
-                  <td>
-                    {formatDate(request.end_date)}
-                  </td>
+                  <td>{formatDate(request.end_date)}</td>
 
                   <td>{request.status}</td>
 
                   <td>
-                    <button
-                      type="button"
-                      className="btn btn-success btn-sm"
-                      onClick={() =>
-                        setRequestToApprove(request)
-                      }
-                      disabled={
-                        approvingId === request.id
-                      }
-                    >
-                      {approvingId === request.id
-                        ? "Approving..."
-                        : "Approve"}
-                    </button>
+                    <div className="d-flex gap-2">
+                      <button
+                        type="button"
+                        className="btn btn-success btn-sm"
+                        onClick={() =>
+                          setRequestToApprove(request)
+                        }
+                        disabled={
+                          approvingId === request.id ||
+                          rejectingId === request.id
+                        }
+                      >
+                        {approvingId === request.id
+                          ? "Approving..."
+                          : "Approve"}
+                      </button>
+
+                      <button
+                        type="button"
+                        className="btn btn-danger btn-sm"
+                        onClick={() =>
+                          setRequestToReject(request)
+                        }
+                        disabled={
+                          approvingId === request.id ||
+                          rejectingId === request.id
+                        }
+                      >
+                        {rejectingId === request.id
+                          ? "Rejecting..."
+                          : "Reject"}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -194,10 +249,21 @@ function OutstandingLeaveRequestsPage() {
         confirmLabel="Approve Leave"
         cancelLabel="Keep Pending"
         onConfirm={handleApprove}
-        onCancel={handleCloseModal}
+        onCancel={handleCloseApproveModal}
         isProcessing={
           requestToApprove !== null &&
           approvingId === requestToApprove.id
+        }
+      />
+
+      <RejectLeaveModal
+        show={requestToReject !== null}
+        request={requestToReject}
+        onConfirm={handleReject}
+        onCancel={handleCloseRejectModal}
+        isProcessing={
+          requestToReject !== null &&
+          rejectingId === requestToReject.id
         }
       />
     </div>

@@ -53,7 +53,10 @@ function MyLeaveRequestsPage() {
       setRequests((currentRequests) =>
         currentRequests.map((currentRequest) =>
           currentRequest.id === requestToCancel.id
-            ? { ...currentRequest, status: "Cancelled" }
+            ? {
+                ...currentRequest,
+                status: "Cancelled",
+              }
             : currentRequest
         )
       );
@@ -79,12 +82,23 @@ function MyLeaveRequestsPage() {
     setRequestToCancel(null);
   }
 
+  function displayReason(request) {
+    if (request.status === "Rejected" && request.reason) {
+      return request.reason;
+    }
+
+    return "—";
+  }
+
   return (
     <div>
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1 className="mb-0">My Leave Requests</h1>
 
-        <Link to="/dashboard" className="btn btn-outline-secondary">
+        <Link
+          to="/dashboard"
+          className="btn btn-outline-secondary"
+        >
           Back to Dashboard
         </Link>
       </div>
@@ -111,6 +125,7 @@ function MyLeaveRequestsPage() {
                 <th scope="col">Start Date</th>
                 <th scope="col">End Date</th>
                 <th scope="col">Status</th>
+                <th scope="col">Reason</th>
                 <th scope="col">Actions</th>
               </tr>
             </thead>
@@ -121,14 +136,19 @@ function MyLeaveRequestsPage() {
                   <td>{formatDate(request.start_date)}</td>
                   <td>{formatDate(request.end_date)}</td>
                   <td>{request.status}</td>
+                  <td>{displayReason(request)}</td>
 
                   <td>
                     {request.status === "Pending" && (
                       <button
                         type="button"
                         className="btn btn-outline-danger btn-sm"
-                        onClick={() => setRequestToCancel(request)}
-                        disabled={cancellingId === request.id}
+                        onClick={() =>
+                          setRequestToCancel(request)
+                        }
+                        disabled={
+                          cancellingId === request.id
+                        }
                       >
                         {cancellingId === request.id
                           ? "Cancelling..."
