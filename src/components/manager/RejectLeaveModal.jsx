@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 function RejectLeaveModal({
   show,
@@ -9,19 +9,20 @@ function RejectLeaveModal({
 }) {
   const [reason, setReason] = useState("");
 
-  useEffect(() => {
-    if (show) {
-      setReason("");
-    }
-  }, [show, request]);
-
   if (!show || !request) {
     return null;
   }
 
   function handleSubmit(event) {
     event.preventDefault();
+
     onConfirm(reason.trim());
+    setReason("");
+  }
+
+  function handleCancel() {
+    setReason("");
+    onCancel();
   }
 
   return (
@@ -48,7 +49,7 @@ function RejectLeaveModal({
                   type="button"
                   className="btn-close"
                   aria-label="Close"
-                  onClick={onCancel}
+                  onClick={handleCancel}
                   disabled={isProcessing}
                 />
               </div>
@@ -57,7 +58,8 @@ function RejectLeaveModal({
                 <p>
                   Reject leave request for{" "}
                   <strong>
-                    {request.user.first_name} {request.user.surname}
+                    {request.user.first_name}{" "}
+                    {request.user.surname}
                   </strong>
                   ?
                 </p>
@@ -75,7 +77,9 @@ function RejectLeaveModal({
                     className="form-control"
                     rows="3"
                     value={reason}
-                    onChange={(event) => setReason(event.target.value)}
+                    onChange={(event) =>
+                      setReason(event.target.value)
+                    }
                     disabled={isProcessing}
                     placeholder="Enter a reason for rejecting this request"
                   />
@@ -86,7 +90,7 @@ function RejectLeaveModal({
                 <button
                   type="button"
                   className="btn btn-outline-secondary"
-                  onClick={onCancel}
+                  onClick={handleCancel}
                   disabled={isProcessing}
                 >
                   Keep Pending
@@ -97,7 +101,9 @@ function RejectLeaveModal({
                   className="btn btn-danger"
                   disabled={isProcessing}
                 >
-                  {isProcessing ? "Rejecting..." : "Reject Leave"}
+                  {isProcessing
+                    ? "Rejecting..."
+                    : "Reject Leave"}
                 </button>
               </div>
             </form>

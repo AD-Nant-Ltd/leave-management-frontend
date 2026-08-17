@@ -12,6 +12,7 @@ import OutstandingLeaveRequestsPage from "../../../pages/manager/OutstandingLeav
 
 const mockGetOutstandingLeaveRequests = vi.fn();
 const mockApproveLeaveRequest = vi.fn();
+const mockRejectLeaveRequest = vi.fn();
 
 vi.mock("../../../hooks/useAuth", () => ({
   default: () => ({
@@ -23,8 +24,12 @@ vi.mock("../../../services/managerService", () => ({
   default: {
     getOutstandingLeaveRequests: (...args) =>
       mockGetOutstandingLeaveRequests(...args),
+
     approveLeaveRequest: (...args) =>
       mockApproveLeaveRequest(...args),
+
+    rejectLeaveRequest: (...args) =>
+      mockRejectLeaveRequest(...args),
   },
 }));
 
@@ -54,6 +59,7 @@ describe("OutstandingLeaveRequestsPage", () => {
   beforeEach(() => {
     mockGetOutstandingLeaveRequests.mockReset();
     mockApproveLeaveRequest.mockReset();
+    mockRejectLeaveRequest.mockReset();
   });
 
   test("shows a loading message while requests are retrieved", () => {
@@ -290,7 +296,8 @@ describe("OutstandingLeaveRequestsPage", () => {
     ]);
 
     mockApproveLeaveRequest.mockResolvedValue({
-      message: "Leave request 10 for user_id 1 has been approved",
+      message:
+        "Leave request 10 for user_id 1 has been approved",
       data: {
         status: "Approved",
         days_remaining: 22,
@@ -331,7 +338,8 @@ describe("OutstandingLeaveRequestsPage", () => {
     ]);
 
     mockApproveLeaveRequest.mockResolvedValue({
-      message: "Leave request 10 for user_id 1 has been approved",
+      message:
+        "Leave request 10 for user_id 1 has been approved",
       data: {
         status: "Approved",
         days_remaining: 22,
@@ -371,7 +379,8 @@ describe("OutstandingLeaveRequestsPage", () => {
     ]);
 
     mockApproveLeaveRequest.mockResolvedValue({
-      message: "Leave request 10 for user_id 1 has been approved",
+      message:
+        "Leave request 10 for user_id 1 has been approved",
       data: {
         status: "Approved",
         days_remaining: 22,
@@ -469,6 +478,320 @@ describe("OutstandingLeaveRequestsPage", () => {
       await screen.findByRole("alert")
     ).toHaveTextContent(
       "Unable to approve leave request."
+    );
+  });
+
+  test("displays a reject action for an outstanding request", async () => {
+    mockGetOutstandingLeaveRequests.mockResolvedValue([
+      pendingRequest(),
+    ]);
+
+    renderPage();
+
+    expect(
+      await screen.findByRole("button", {
+        name: /^reject$/i,
+      })
+    ).toBeInTheDocument();
+  });
+
+  test("opens rejection modal when reject is selected", async () => {
+    const user = userEvent.setup();
+
+    mockGetOutstandingLeaveRequests.mockResolvedValue([
+      pendingRequest(),
+    ]);
+
+    renderPage();
+
+    await user.click(
+      await screen.findByRole("button", {
+        name: /^reject$/i,
+      })
+    );
+
+    expect(
+      screen.getByRole("heading", {
+        name: /reject leave request/i,
+      })
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByLabelText(/reason for rejection/i)
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getAllByText(/test employee/i)
+    ).toHaveLength(2);
+  });
+
+  test("keeps the request pending when rejection is dismissed", async () => {
+    const user = userEvent.setup();
+
+    mockGetOutstandingLeaveRequests.mockResolvedValue([
+      pendingRequest(),
+    ]);
+
+    renderPage();
+
+    await user.click(
+      await screen.findByRole("button", {
+        name: /^reject$/i,
+      })
+    );
+
+    await user.click(
+      screen.getByRole("button", {
+        name: /keep pending/i,
+      })
+    );
+
+    expect(
+      mockRejectLeaveRequest
+    ).not.toHaveBeenCalled();
+
+    expect(
+      screen.queryByRole("heading", {
+        name: /reject leave request/i,
+      })
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.getByText("Pending")
+    ).toBeInTheDocument();
+  });
+
+  test("submits rejection with a reason", async () => {
+    const user = userEvent.setup();
+
+    mockGetOutstandingLeaveRequests.mockResolvedValue([
+      pendingRequest(),
+    ]);
+
+    mockRejectLeaveRequest.mockResolvedValue({
+      message: "Leave request 10 has been rejected",
+      data: {
+        status: "Rejected",
+        reason: "Insufficient team coverage",
+      },
+    });
+
+    renderPage();
+
+    await user.click(
+      await screen.findByRole("button", {
+        name: /^reject$/i,
+      })
+    );
+
+    await user.type(
+      screen.getByLabelText(/reason for rejection/i),
+      "Insufficient team coverage"
+    );
+
+    await user.click(
+      screen.getByRole("button", {
+        name: /reject leave/i,
+      })
+    );
+
+    expect(
+      mockRejectLeaveRequest
+    ).toHaveBeenCalledWith(
+      "manager-token",
+      10,
+      "Insufficient team coverage"
+    );
+
+    expect(
+      mockRejectLeaveRequest
+    ).toHaveBeenCalledTimes(1);
+  });
+
+  test("allows rejection without a reason", async () => {
+    const user = userEvent.setup();
+
+    mockGetOutstandingLeaveRequests.mockResolvedValue([
+      pendingRequest(),
+    ]);
+
+    mockRejectLeaveRequest.mockResolvedValue({
+      message: "Leave request 10 has been rejected",
+      data: {
+        status: "Rejected",
+        reason: "Rejected by manager",
+      },
+    });
+
+    renderPage();
+
+    await user.click(
+      await screen.findByRole("button", {
+        name: /^reject$/i,
+      })
+    );
+
+    await user.click(
+      screen.getByRole("button", {
+        name: /reject leave/i,
+      })
+    );
+
+    expect(
+      mockRejectLeaveRequest
+    ).toHaveBeenCalledWith(
+      "manager-token",
+      10,
+      ""
+    );
+  });
+
+  test("removes rejected request from the outstanding queue", async () => {
+    const user = userEvent.setup();
+
+    mockGetOutstandingLeaveRequests.mockResolvedValue([
+      pendingRequest(),
+    ]);
+
+    mockRejectLeaveRequest.mockResolvedValue({
+      message: "Leave request 10 has been rejected",
+      data: {
+        status: "Rejected",
+        reason: "Rejected by manager",
+      },
+    });
+
+    renderPage();
+
+    await user.click(
+      await screen.findByRole("button", {
+        name: /^reject$/i,
+      })
+    );
+
+    await user.click(
+      screen.getByRole("button", {
+        name: /reject leave/i,
+      })
+    );
+
+    expect(
+      await screen.findByText(
+        "There are no outstanding leave requests."
+      )
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByText("Test Employee")
+    ).not.toBeInTheDocument();
+  });
+
+  test("displays success feedback after rejection", async () => {
+    const user = userEvent.setup();
+
+    mockGetOutstandingLeaveRequests.mockResolvedValue([
+      pendingRequest(),
+    ]);
+
+    mockRejectLeaveRequest.mockResolvedValue({
+      message: "Leave request 10 has been rejected",
+      data: {
+        status: "Rejected",
+        reason: "Rejected by manager",
+      },
+    });
+
+    renderPage();
+
+    await user.click(
+      await screen.findByRole("button", {
+        name: /^reject$/i,
+      })
+    );
+
+    await user.click(
+      screen.getByRole("button", {
+        name: /reject leave/i,
+      })
+    );
+
+    expect(
+      await screen.findByText(
+        "Leave request 10 has been rejected"
+      )
+    ).toBeInTheDocument();
+  });
+
+  test("displays an API error when rejection fails", async () => {
+    const user = userEvent.setup();
+
+    mockGetOutstandingLeaveRequests.mockResolvedValue([
+      pendingRequest(),
+    ]);
+
+    mockRejectLeaveRequest.mockRejectedValue({
+      response: {
+        data: {
+          error:
+            "This manager is not authorised to reject this leave request",
+        },
+      },
+    });
+
+    renderPage();
+
+    await user.click(
+      await screen.findByRole("button", {
+        name: /^reject$/i,
+      })
+    );
+
+    await user.click(
+      screen.getByRole("button", {
+        name: /reject leave/i,
+      })
+    );
+
+    expect(
+      await screen.findByRole("alert")
+    ).toHaveTextContent(
+      "This manager is not authorised to reject this leave request"
+    );
+
+    expect(
+      screen.getAllByText("Test Employee")
+    ).toHaveLength(2);
+  });
+
+  test("displays a generic error when rejection fails without an API message", async () => {
+    const user = userEvent.setup();
+
+    mockGetOutstandingLeaveRequests.mockResolvedValue([
+      pendingRequest(),
+    ]);
+
+    mockRejectLeaveRequest.mockRejectedValue(
+      new Error("Network failure")
+    );
+
+    renderPage();
+
+    await user.click(
+      await screen.findByRole("button", {
+        name: /^reject$/i,
+      })
+    );
+
+    await user.click(
+      screen.getByRole("button", {
+        name: /reject leave/i,
+      })
+    );
+
+    expect(
+      await screen.findByRole("alert")
+    ).toHaveTextContent(
+      "Unable to reject leave request."
     );
   });
 });

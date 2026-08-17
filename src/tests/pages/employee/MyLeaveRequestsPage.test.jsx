@@ -1,7 +1,13 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import {
+  beforeEach,
+  describe,
+  expect,
+  test,
+  vi,
+} from "vitest";
 import MyLeaveRequestsPage from "../../../pages/employee/MyLeaveRequestsPage";
 
 const mockGetLeaveRequests = vi.fn();
@@ -15,8 +21,11 @@ vi.mock("../../../hooks/useAuth", () => ({
 
 vi.mock("../../../services/leaveService", () => ({
   default: {
-    getLeaveRequests: (...args) => mockGetLeaveRequests(...args),
-    cancelLeaveRequest: (...args) => mockCancelLeaveRequest(...args),
+    getLeaveRequests: (...args) =>
+      mockGetLeaveRequests(...args),
+
+    cancelLeaveRequest: (...args) =>
+      mockCancelLeaveRequest(...args),
   },
 }));
 
@@ -34,6 +43,7 @@ function pendingRequest() {
     start_date: "2026-12-01T00:00:00.000000Z",
     end_date: "2026-12-02T00:00:00.000000Z",
     status: "Pending",
+    reason: null,
   };
 }
 
@@ -44,7 +54,9 @@ describe("MyLeaveRequestsPage", () => {
   });
 
   test("shows a loading message while requests are being retrieved", () => {
-    mockGetLeaveRequests.mockReturnValue(new Promise(() => {}));
+    mockGetLeaveRequests.mockReturnValue(
+      new Promise(() => {})
+    );
 
     renderPage();
 
@@ -54,14 +66,21 @@ describe("MyLeaveRequestsPage", () => {
   });
 
   test("loads leave requests using the authenticated token", async () => {
-    mockGetLeaveRequests.mockResolvedValue([pendingRequest()]);
+    mockGetLeaveRequests.mockResolvedValue([
+      pendingRequest(),
+    ]);
 
     renderPage();
 
     await screen.findByText("Pending");
 
-    expect(mockGetLeaveRequests).toHaveBeenCalledWith("test-token");
-    expect(mockGetLeaveRequests).toHaveBeenCalledTimes(1);
+    expect(
+      mockGetLeaveRequests
+    ).toHaveBeenCalledWith("test-token");
+
+    expect(
+      mockGetLeaveRequests
+    ).toHaveBeenCalledTimes(1);
   });
 
   test("displays request dates and status", async () => {
@@ -72,19 +91,35 @@ describe("MyLeaveRequestsPage", () => {
         start_date: "2026-07-01T00:00:00.000000Z",
         end_date: "2026-07-03T00:00:00.000000Z",
         status: "Approved",
+        reason: "Approved by manager",
       },
     ]);
 
     renderPage();
 
-    expect(await screen.findByText("01/12/2026")).toBeInTheDocument();
-    expect(screen.getByText("02/12/2026")).toBeInTheDocument();
+    expect(
+      await screen.findByText("01/12/2026")
+    ).toBeInTheDocument();
 
-    expect(screen.getByText("01/07/2026")).toBeInTheDocument();
-    expect(screen.getByText("03/07/2026")).toBeInTheDocument();
+    expect(
+      screen.getByText("02/12/2026")
+    ).toBeInTheDocument();
 
-    expect(screen.getByText("Pending")).toBeInTheDocument();
-    expect(screen.getByText("Approved")).toBeInTheDocument();
+    expect(
+      screen.getByText("01/07/2026")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("03/07/2026")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Pending")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Approved")
+    ).toBeInTheDocument();
   });
 
   test("displays an empty state when no requests exist", async () => {
@@ -94,7 +129,9 @@ describe("MyLeaveRequestsPage", () => {
 
     expect(
       await screen.findByRole("status")
-    ).toHaveTextContent("You have no leave requests.");
+    ).toHaveTextContent(
+      "You have no leave requests."
+    );
   });
 
   test("displays an error when requests cannot be loaded", async () => {
@@ -106,7 +143,9 @@ describe("MyLeaveRequestsPage", () => {
 
     expect(
       await screen.findByRole("alert")
-    ).toHaveTextContent("Unable to load leave requests.");
+    ).toHaveTextContent(
+      "Unable to load leave requests."
+    );
   });
 
   test("provides navigation back to the dashboard", async () => {
@@ -115,17 +154,23 @@ describe("MyLeaveRequestsPage", () => {
     renderPage();
 
     expect(
-      await screen.findByRole("link", { name: /back to dashboard/i })
+      await screen.findByRole("link", {
+        name: /back to dashboard/i,
+      })
     ).toHaveAttribute("href", "/dashboard");
   });
 
   test("shows a cancel button for pending requests", async () => {
-    mockGetLeaveRequests.mockResolvedValue([pendingRequest()]);
+    mockGetLeaveRequests.mockResolvedValue([
+      pendingRequest(),
+    ]);
 
     renderPage();
 
     expect(
-      await screen.findByRole("button", { name: /^cancel$/i })
+      await screen.findByRole("button", {
+        name: /^cancel$/i,
+      })
     ).toBeInTheDocument();
   });
 
@@ -136,18 +181,21 @@ describe("MyLeaveRequestsPage", () => {
         start_date: "2026-07-01T00:00:00.000000Z",
         end_date: "2026-07-03T00:00:00.000000Z",
         status: "Approved",
+        reason: "Approved by manager",
       },
       {
         id: 3,
         start_date: "2026-06-01T00:00:00.000000Z",
         end_date: "2026-06-03T00:00:00.000000Z",
         status: "Rejected",
+        reason: "Rejected by manager",
       },
       {
         id: 4,
         start_date: "2026-05-01T00:00:00.000000Z",
         end_date: "2026-05-03T00:00:00.000000Z",
         status: "Cancelled",
+        reason: "Leave request cancelled",
       },
     ]);
 
@@ -156,23 +204,31 @@ describe("MyLeaveRequestsPage", () => {
     await screen.findByText("Approved");
 
     expect(
-      screen.queryByRole("button", { name: /^cancel$/i })
+      screen.queryByRole("button", {
+        name: /^cancel$/i,
+      })
     ).not.toBeInTheDocument();
   });
 
   test("opens confirmation modal when cancel is selected", async () => {
     const user = userEvent.setup();
 
-    mockGetLeaveRequests.mockResolvedValue([pendingRequest()]);
+    mockGetLeaveRequests.mockResolvedValue([
+      pendingRequest(),
+    ]);
 
     renderPage();
 
     await user.click(
-      await screen.findByRole("button", { name: /^cancel$/i })
+      await screen.findByRole("button", {
+        name: /^cancel$/i,
+      })
     );
 
     expect(
-      screen.getByRole("heading", { name: /cancel leave request/i })
+      screen.getByRole("heading", {
+        name: /cancel leave request/i,
+      })
     ).toBeInTheDocument();
 
     expect(
@@ -185,31 +241,46 @@ describe("MyLeaveRequestsPage", () => {
   test("keeps the request when cancellation is dismissed", async () => {
     const user = userEvent.setup();
 
-    mockGetLeaveRequests.mockResolvedValue([pendingRequest()]);
+    mockGetLeaveRequests.mockResolvedValue([
+      pendingRequest(),
+    ]);
 
     renderPage();
 
     await user.click(
-      await screen.findByRole("button", { name: /^cancel$/i })
+      await screen.findByRole("button", {
+        name: /^cancel$/i,
+      })
     );
 
     await user.click(
-      screen.getByRole("button", { name: /keep request/i })
+      screen.getByRole("button", {
+        name: /keep request/i,
+      })
     );
 
-    expect(mockCancelLeaveRequest).not.toHaveBeenCalled();
+    expect(
+      mockCancelLeaveRequest
+    ).not.toHaveBeenCalled();
 
     expect(
-      screen.queryByRole("heading", { name: /cancel leave request/i })
+      screen.queryByRole("heading", {
+        name: /cancel leave request/i,
+      })
     ).not.toBeInTheDocument();
 
-    expect(screen.getByText("Pending")).toBeInTheDocument();
+    expect(
+      screen.getByText("Pending")
+    ).toBeInTheDocument();
   });
 
   test("submits cancellation using the authenticated token and request id", async () => {
     const user = userEvent.setup();
 
-    mockGetLeaveRequests.mockResolvedValue([pendingRequest()]);
+    mockGetLeaveRequests.mockResolvedValue([
+      pendingRequest(),
+    ]);
+
     mockCancelLeaveRequest.mockResolvedValue({
       message: "Leave request has been cancelled",
       data: {
@@ -221,14 +292,20 @@ describe("MyLeaveRequestsPage", () => {
     renderPage();
 
     await user.click(
-      await screen.findByRole("button", { name: /^cancel$/i })
+      await screen.findByRole("button", {
+        name: /^cancel$/i,
+      })
     );
 
     await user.click(
-      screen.getByRole("button", { name: /cancel leave/i })
+      screen.getByRole("button", {
+        name: /cancel leave/i,
+      })
     );
 
-    expect(mockCancelLeaveRequest).toHaveBeenCalledWith(
+    expect(
+      mockCancelLeaveRequest
+    ).toHaveBeenCalledWith(
       "test-token",
       1
     );
@@ -237,7 +314,10 @@ describe("MyLeaveRequestsPage", () => {
   test("updates the request to cancelled after successful cancellation", async () => {
     const user = userEvent.setup();
 
-    mockGetLeaveRequests.mockResolvedValue([pendingRequest()]);
+    mockGetLeaveRequests.mockResolvedValue([
+      pendingRequest(),
+    ]);
+
     mockCancelLeaveRequest.mockResolvedValue({
       message: "Leave request has been cancelled",
       data: {
@@ -249,11 +329,15 @@ describe("MyLeaveRequestsPage", () => {
     renderPage();
 
     await user.click(
-      await screen.findByRole("button", { name: /^cancel$/i })
+      await screen.findByRole("button", {
+        name: /^cancel$/i,
+      })
     );
 
     await user.click(
-      screen.getByRole("button", { name: /cancel leave/i })
+      screen.getByRole("button", {
+        name: /cancel leave/i,
+      })
     );
 
     expect(
@@ -261,19 +345,24 @@ describe("MyLeaveRequestsPage", () => {
     ).toBeInTheDocument();
 
     expect(
-      screen.queryByRole("button", { name: /^cancel$/i })
+      screen.queryByRole("button", {
+        name: /^cancel$/i,
+      })
     ).not.toBeInTheDocument();
   });
 
   test("displays an API error when cancellation fails", async () => {
     const user = userEvent.setup();
 
-    mockGetLeaveRequests.mockResolvedValue([pendingRequest()]);
+    mockGetLeaveRequests.mockResolvedValue([
+      pendingRequest(),
+    ]);
 
     mockCancelLeaveRequest.mockRejectedValue({
       response: {
         data: {
-          error: "Unable to cancel this leave request",
+          error:
+            "Unable to cancel this leave request",
         },
       },
     });
@@ -281,15 +370,91 @@ describe("MyLeaveRequestsPage", () => {
     renderPage();
 
     await user.click(
-      await screen.findByRole("button", { name: /^cancel$/i })
+      await screen.findByRole("button", {
+        name: /^cancel$/i,
+      })
     );
 
     await user.click(
-      screen.getByRole("button", { name: /cancel leave/i })
+      screen.getByRole("button", {
+        name: /cancel leave/i,
+      })
     );
 
     expect(
       await screen.findByRole("alert")
-    ).toHaveTextContent("Unable to cancel this leave request");
+    ).toHaveTextContent(
+      "Unable to cancel this leave request"
+    );
+  });
+
+  test("displays rejection reason for a rejected request", async () => {
+    mockGetLeaveRequests.mockResolvedValue([
+      {
+        id: 20,
+        start_date: "2026-09-03T00:00:00.000000Z",
+        end_date: "2026-09-09T00:00:00.000000Z",
+        status: "Rejected",
+        reason: "Insufficient team coverage",
+      },
+    ]);
+
+    renderPage();
+
+    expect(
+      await screen.findByText(
+        "Insufficient team coverage"
+      )
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Rejected")
+    ).toBeInTheDocument();
+  });
+
+  test("displays backend fallback reason for rejected request", async () => {
+    mockGetLeaveRequests.mockResolvedValue([
+      {
+        id: 21,
+        start_date: "2026-09-17T00:00:00.000000Z",
+        end_date: "2026-09-17T00:00:00.000000Z",
+        status: "Rejected",
+        reason: "Rejected by manager",
+      },
+    ]);
+
+    renderPage();
+
+    expect(
+      await screen.findByText(
+        "Rejected by manager"
+      )
+    ).toBeInTheDocument();
+  });
+
+  test("does not display stored reason for non-rejected requests", async () => {
+    mockGetLeaveRequests.mockResolvedValue([
+      {
+        id: 22,
+        start_date: "2026-12-17T00:00:00.000000Z",
+        end_date: "2026-12-18T00:00:00.000000Z",
+        status: "Approved",
+        reason: "Approved by manager",
+      },
+    ]);
+
+    renderPage();
+
+    expect(
+      await screen.findByText("Approved")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByText("Approved by manager")
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.getByText("—")
+    ).toBeInTheDocument();
   });
 });
