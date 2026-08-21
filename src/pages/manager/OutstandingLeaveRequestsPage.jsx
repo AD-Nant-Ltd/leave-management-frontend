@@ -4,6 +4,7 @@ import useAuth from "../../hooks/useAuth";
 import managerService from "../../services/managerService";
 import ConfirmationModal from "../../components/common/ConfirmationModal";
 import RejectLeaveModal from "../../components/manager/RejectLeaveModal";
+import StaffLeaveBalanceModal from "../../components/manager/StaffLeaveBalanceModal";
 
 function formatDate(date) {
   return new Intl.DateTimeFormat("en-GB", {
@@ -27,6 +28,11 @@ function OutstandingLeaveRequestsPage() {
   const [requestToReject, setRequestToReject] = useState(null);
   const [rejectingId, setRejectingId] = useState(null);
 
+  const [balanceEmployee, setBalanceEmployee] = useState(null);
+  const [staffBalance, setStaffBalance] = useState(null);
+  const [isLoadingBalance, setIsLoadingBalance] = useState(false);
+  const [balanceError, setBalanceError] = useState("");
+
   useEffect(() => {
     async function loadOutstandingRequests() {
       try {
@@ -48,6 +54,41 @@ function OutstandingLeaveRequestsPage() {
 
     loadOutstandingRequests();
   }, [token]);
+
+  async function handleViewBalance(request) {
+    setBalanceEmployee(request.user);
+    setStaffBalance(null);
+    setBalanceError("");
+    setIsLoadingBalance(true);
+
+    try {
+      const data = await managerService.getStaffLeaveBalance(
+        token,
+        request.user.id
+      );
+
+      setStaffBalance(data);
+    } catch (error) {
+      const apiMessage =
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        "Unable to load staff leave balance.";
+
+      setBalanceError(apiMessage);
+    } finally {
+      setIsLoadingBalance(false);
+    }
+  }
+
+  function handleCloseBalanceModal() {
+    if (isLoadingBalance) {
+      return;
+    }
+
+    setBalanceEmployee(null);
+    setStaffBalance(null);
+    setBalanceError("");
+  }
 
   async function handleApprove() {
     if (!requestToApprove) {
@@ -181,6 +222,7 @@ function OutstandingLeaveRequestsPage() {
                 <th scope="col">Employee</th>
                 <th scope="col">Start Date</th>
                 <th scope="col">End Date</th>
+                <th scope="col">Days</th>
                 <th scope="col">Status</th>
                 <th scope="col">Actions</th>
               </tr>
@@ -198,10 +240,26 @@ function OutstandingLeaveRequestsPage() {
 
                   <td>{formatDate(request.end_date)}</td>
 
+                  <td>{request.days_requested}</td>
+
                   <td>{request.status}</td>
 
                   <td>
-                    <div className="d-flex gap-2">
+                    <div className="d-flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        className="btn btn-outline-primary btn-sm"
+                        onClick={() =>
+                          handleViewBalance(request)
+                        }
+                        disabled={
+                          approvingId === request.id ||
+                          rejectingId === request.id
+                        }
+                      >
+                        View Balance
+                      </button>
+
                       <button
                         type="button"
                         className="btn btn-success btn-sm"
@@ -241,6 +299,15 @@ function OutstandingLeaveRequestsPage() {
           </table>
         </div>
       )}
+
+      <StaffLeaveBalanceModal
+        show={balanceEmployee !== null}
+        employee={balanceEmployee}
+        balance={staffBalance}
+        isLoading={isLoadingBalance}
+        error={balanceError}
+        onClose={handleCloseBalanceModal}
+      />
 
       <ConfirmationModal
         show={requestToApprove !== null}

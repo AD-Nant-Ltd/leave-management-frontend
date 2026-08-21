@@ -1,23 +1,34 @@
 import { Link } from "react-router-dom";
 
-function LeaveBalanceSummary({ balance }) {
+function LeaveBalanceSummary({
+  balance,
+  title = "Leave Balance",
+  showEmployeeActions = false,
+}) {
   return (
     <section aria-labelledby="leave-balance-heading">
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h2 id="leave-balance-heading" className="h4 mb-0">
-          Leave Balance
+          {title}
         </h2>
 
+        {showEmployeeActions && (
+          <div className="d-flex gap-2">
+            <Link
+              to="/leave/requests"
+              className="btn btn-outline-primary"
+            >
+              My Requests
+            </Link>
 
-        <div className="d-flex gap-2">
-          <Link to="/leave/requests" className="btn btn-outline-primary">
-            My Requests
-          </Link>
-
-          <Link to="/leave/request" className="btn btn-primary">
-            Request Leave
-          </Link>
-        </div>
+            <Link
+              to="/leave/request"
+              className="btn btn-primary"
+            >
+              Request Leave
+            </Link>
+          </div>
+        )}
       </div>
 
       <div className="row g-3">
