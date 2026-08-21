@@ -1,6 +1,12 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import {
+  beforeEach,
+  describe,
+  expect,
+  test,
+  vi,
+} from "vitest";
 import DashboardPage from "../../../pages/employee/DashboardPage";
 
 const mockGetLeaveBalance = vi.fn();
@@ -15,7 +21,8 @@ vi.mock("../../../hooks/useAuth", () => ({
 
 vi.mock("../../../services/leaveService", () => ({
   default: {
-    getLeaveBalance: (...args) => mockGetLeaveBalance(...args),
+    getLeaveBalance: (...args) =>
+      mockGetLeaveBalance(...args),
   },
 }));
 
@@ -41,7 +48,9 @@ describe("DashboardPage", () => {
   });
 
   test("shows a loading message while leave balance is being retrieved", () => {
-    mockGetLeaveBalance.mockReturnValue(new Promise(() => {}));
+    mockGetLeaveBalance.mockReturnValue(
+      new Promise(() => {})
+    );
 
     renderDashboardPage();
 
@@ -83,13 +92,27 @@ describe("DashboardPage", () => {
       })
     ).toBeInTheDocument();
 
-    expect(screen.getByText("25")).toBeInTheDocument();
-    expect(screen.getByText("5")).toBeInTheDocument();
-    expect(screen.getByText("20")).toBeInTheDocument();
+    expect(
+      screen.getByText("25")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("5")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("20")
+    ).toBeInTheDocument();
 
     expect(
       screen.getByRole("link", {
         name: /request leave/i,
+      })
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("link", {
+        name: /my requests/i,
       })
     ).toBeInTheDocument();
   });
@@ -105,11 +128,13 @@ describe("DashboardPage", () => {
 
     await screen.findByText("25");
 
-    expect(mockGetLeaveBalance).toHaveBeenCalledWith(
-      "test-token"
-    );
+    expect(
+      mockGetLeaveBalance
+    ).toHaveBeenCalledWith("test-token");
 
-    expect(mockGetLeaveBalance).toHaveBeenCalledTimes(1);
+    expect(
+      mockGetLeaveBalance
+    ).toHaveBeenCalledTimes(1);
   });
 
   test("shows an error when the leave balance cannot be retrieved", async () => {
@@ -158,6 +183,32 @@ describe("DashboardPage", () => {
     );
   });
 
+  test("shows staff leave balance navigation for a manager", async () => {
+    mockUser.mockReturnValue({
+      id: 2,
+      first_name: "Mia",
+      surname: "Manager",
+      role_id: 2,
+    });
+
+    mockGetLeaveBalance.mockResolvedValue({
+      annual_allowance: 25,
+      days_used: 5,
+      days_remaining: 20,
+    });
+
+    renderDashboardPage();
+
+    expect(
+      await screen.findByRole("link", {
+        name: /view staff balances/i,
+      })
+    ).toHaveAttribute(
+      "href",
+      "/manager/staff-balances"
+    );
+  });
+
   test("does not show the manager section for an employee", async () => {
     mockUser.mockReturnValue({
       id: 1,
@@ -185,6 +236,31 @@ describe("DashboardPage", () => {
     expect(
       screen.queryByRole("link", {
         name: /view outstanding requests/i,
+      })
+    ).not.toBeInTheDocument();
+  });
+
+  test("does not show staff leave balance navigation for an employee", async () => {
+    mockUser.mockReturnValue({
+      id: 1,
+      first_name: "Test",
+      surname: "Employee",
+      role_id: 1,
+    });
+
+    mockGetLeaveBalance.mockResolvedValue({
+      annual_allowance: 25,
+      days_used: 5,
+      days_remaining: 20,
+    });
+
+    renderDashboardPage();
+
+    await screen.findByText("25");
+
+    expect(
+      screen.queryByRole("link", {
+        name: /view staff balances/i,
       })
     ).not.toBeInTheDocument();
   });

@@ -13,6 +13,7 @@ import OutstandingLeaveRequestsPage from "../../../pages/manager/OutstandingLeav
 const mockGetOutstandingLeaveRequests = vi.fn();
 const mockApproveLeaveRequest = vi.fn();
 const mockRejectLeaveRequest = vi.fn();
+const mockGetStaffLeaveBalance = vi.fn();
 
 vi.mock("../../../hooks/useAuth", () => ({
   default: () => ({
@@ -30,6 +31,9 @@ vi.mock("../../../services/managerService", () => ({
 
     rejectLeaveRequest: (...args) =>
       mockRejectLeaveRequest(...args),
+
+    getStaffLeaveBalance: (...args) =>
+      mockGetStaffLeaveBalance(...args),
   },
 }));
 
@@ -47,8 +51,10 @@ function pendingRequest() {
     user_id: 1,
     start_date: "2026-09-01T00:00:00.000000Z",
     end_date: "2026-09-03T00:00:00.000000Z",
+    days_requested: 3,
     status: "Pending",
     user: {
+      id: 1,
       first_name: "Test",
       surname: "Employee",
     },
@@ -60,6 +66,7 @@ describe("OutstandingLeaveRequestsPage", () => {
     mockGetOutstandingLeaveRequests.mockReset();
     mockApproveLeaveRequest.mockReset();
     mockRejectLeaveRequest.mockReset();
+    mockGetStaffLeaveBalance.mockReset();
   });
 
   test("shows a loading message while requests are retrieved", () => {
@@ -118,6 +125,26 @@ describe("OutstandingLeaveRequestsPage", () => {
     ).toBeInTheDocument();
   });
 
+  test("displays the number of days requested", async () => {
+    mockGetOutstandingLeaveRequests.mockResolvedValue([
+      pendingRequest(),
+    ]);
+
+    renderPage();
+
+    await screen.findByText("Test Employee");
+
+    expect(
+      screen.getByRole("columnheader", {
+        name: /days/i,
+      })
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("3")
+    ).toBeInTheDocument();
+  });
+
   test("displays multiple outstanding requests", async () => {
     mockGetOutstandingLeaveRequests.mockResolvedValue([
       pendingRequest(),
@@ -126,8 +153,10 @@ describe("OutstandingLeaveRequestsPage", () => {
         user_id: 2,
         start_date: "2026-10-05T00:00:00.000000Z",
         end_date: "2026-10-06T00:00:00.000000Z",
+        days_requested: 2,
         status: "Pending",
         user: {
+          id: 2,
           first_name: "Another",
           surname: "Employee",
         },
@@ -208,6 +237,239 @@ describe("OutstandingLeaveRequestsPage", () => {
         name: /back to dashboard/i,
       })
     ).toHaveAttribute("href", "/dashboard");
+  });
+
+  test("displays a view balance action for an outstanding request", async () => {
+    mockGetOutstandingLeaveRequests.mockResolvedValue([
+      pendingRequest(),
+    ]);
+
+    renderPage();
+
+    expect(
+      await screen.findByRole("button", {
+        name: /view balance/i,
+      })
+    ).toBeInTheDocument();
+  });
+
+  test("retrieves staff leave balance using the authenticated token and employee id", async () => {
+    const user = userEvent.setup();
+
+    mockGetOutstandingLeaveRequests.mockResolvedValue([
+      pendingRequest(),
+    ]);
+
+    mockGetStaffLeaveBalance.mockResolvedValue({
+      user_id: 1,
+      annual_allowance: 25,
+      days_used: 10,
+      days_remaining: 15,
+    });
+
+    renderPage();
+
+    await user.click(
+      await screen.findByRole("button", {
+        name: /view balance/i,
+      })
+    );
+
+    expect(
+      mockGetStaffLeaveBalance
+    ).toHaveBeenCalledWith(
+      "manager-token",
+      1
+    );
+
+    expect(
+      mockGetStaffLeaveBalance
+    ).toHaveBeenCalledTimes(1);
+  });
+
+  test("shows a loading state while staff leave balance is retrieved", async () => {
+    const user = userEvent.setup();
+
+    mockGetOutstandingLeaveRequests.mockResolvedValue([
+      pendingRequest(),
+    ]);
+
+    mockGetStaffLeaveBalance.mockReturnValue(
+      new Promise(() => {})
+    );
+
+    renderPage();
+
+    await user.click(
+      await screen.findByRole("button", {
+        name: /view balance/i,
+      })
+    );
+
+    expect(
+      screen.getByText(
+        /loading staff leave balance/i
+      )
+    ).toBeInTheDocument();
+  });
+
+  test("displays the selected employee leave balance in a modal", async () => {
+    const user = userEvent.setup();
+
+    mockGetOutstandingLeaveRequests.mockResolvedValue([
+      pendingRequest(),
+    ]);
+
+    mockGetStaffLeaveBalance.mockResolvedValue({
+      user_id: 1,
+      annual_allowance: 25,
+      days_used: 10,
+      days_remaining: 15,
+    });
+
+    renderPage();
+
+    await user.click(
+      await screen.findByRole("button", {
+        name: /view balance/i,
+      })
+    );
+
+    expect(
+      await screen.findByRole("dialog")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("heading", {
+        name: /test employee - leave balance/i,
+      })
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("heading", {
+        name: /annual allowance/i,
+      })
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("heading", {
+        name: /leave taken/i,
+      })
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("heading", {
+        name: /remaining leave/i,
+      })
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("25")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("10")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("15")
+    ).toBeInTheDocument();
+  });
+
+  test("closes the staff leave balance modal", async () => {
+    const user = userEvent.setup();
+
+    mockGetOutstandingLeaveRequests.mockResolvedValue([
+      pendingRequest(),
+    ]);
+
+    mockGetStaffLeaveBalance.mockResolvedValue({
+      user_id: 1,
+      annual_allowance: 25,
+      days_used: 10,
+      days_remaining: 15,
+    });
+
+    renderPage();
+
+    await user.click(
+      await screen.findByRole("button", {
+        name: /view balance/i,
+      })
+    );
+
+    await screen.findByRole("dialog");
+
+    await user.click(
+      screen.getByRole("button", {
+        name: /^close$/i,
+      })
+    );
+
+    expect(
+      screen.queryByRole("dialog")
+    ).not.toBeInTheDocument();
+  });
+
+  test("displays an API error when staff leave balance cannot be retrieved", async () => {
+    const user = userEvent.setup();
+
+    mockGetOutstandingLeaveRequests.mockResolvedValue([
+      pendingRequest(),
+    ]);
+
+    mockGetStaffLeaveBalance.mockRejectedValue({
+      response: {
+        data: {
+          error:
+            "This manager is not authorised to view this staff member's leave balance",
+        },
+      },
+    });
+
+    renderPage();
+
+    await user.click(
+      await screen.findByRole("button", {
+        name: /view balance/i,
+      })
+    );
+
+    expect(
+      await screen.findByRole("alert")
+    ).toHaveTextContent(
+      "This manager is not authorised to view this staff member's leave balance"
+    );
+
+    expect(
+      screen.getByText("Test Employee")
+    ).toBeInTheDocument();
+  });
+
+  test("displays a generic error when staff balance retrieval fails without an API message", async () => {
+    const user = userEvent.setup();
+
+    mockGetOutstandingLeaveRequests.mockResolvedValue([
+      pendingRequest(),
+    ]);
+
+    mockGetStaffLeaveBalance.mockRejectedValue(
+      new Error("Network failure")
+    );
+
+    renderPage();
+
+    await user.click(
+      await screen.findByRole("button", {
+        name: /view balance/i,
+      })
+    );
+
+    expect(
+      await screen.findByRole("alert")
+    ).toHaveTextContent(
+      "Unable to load staff leave balance."
+    );
   });
 
   test("displays an approve action for an outstanding request", async () => {
