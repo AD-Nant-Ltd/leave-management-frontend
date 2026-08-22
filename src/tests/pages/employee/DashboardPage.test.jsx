@@ -264,4 +264,117 @@ describe("DashboardPage", () => {
       })
     ).not.toBeInTheDocument();
   });
+
+  test("shows the administration section for an admin", async () => {
+    mockUser.mockReturnValue({
+      id: 3,
+      first_name: "Alex",
+      surname: "Admin",
+      role_id: 3,
+    });
+
+    mockGetLeaveBalance.mockResolvedValue({
+      annual_allowance: 25,
+      days_used: 5,
+      days_remaining: 20,
+    });
+
+    renderDashboardPage();
+
+    expect(
+      await screen.findByRole("heading", {
+        name: /^administration$/i,
+      })
+    ).toBeInTheDocument();
+  });
+
+  test("shows create user navigation for an admin", async () => {
+    mockUser.mockReturnValue({
+      id: 3,
+      first_name: "Alex",
+      surname: "Admin",
+      role_id: 3,
+    });
+
+    mockGetLeaveBalance.mockResolvedValue({
+      annual_allowance: 25,
+      days_used: 5,
+      days_remaining: 20,
+    });
+
+    renderDashboardPage();
+
+    expect(
+      await screen.findByRole("link", {
+        name: /^create user$/i,
+      })
+    ).toHaveAttribute(
+      "href",
+      "/admin/users/create"
+    );
+  });
+
+  test("does not show the administration section for an employee", async () => {
+    mockUser.mockReturnValue({
+      id: 1,
+      first_name: "Test",
+      surname: "Employee",
+      role_id: 1,
+    });
+
+    mockGetLeaveBalance.mockResolvedValue({
+      annual_allowance: 25,
+      days_used: 5,
+      days_remaining: 20,
+    });
+
+    renderDashboardPage();
+
+    await screen.findByText("25");
+
+    expect(
+      screen.queryByRole("heading", {
+        name: /^administration$/i,
+      })
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("link", {
+        name: /^create user$/i,
+      })
+    ).not.toBeInTheDocument();
+  });
+
+  test("does not show the administration section for a manager", async () => {
+    mockUser.mockReturnValue({
+      id: 2,
+      first_name: "Mia",
+      surname: "Manager",
+      role_id: 2,
+    });
+
+    mockGetLeaveBalance.mockResolvedValue({
+      annual_allowance: 25,
+      days_used: 5,
+      days_remaining: 20,
+    });
+
+    renderDashboardPage();
+
+    await screen.findByRole("heading", {
+      name: /^manager$/i,
+    });
+
+    expect(
+      screen.queryByRole("heading", {
+        name: /^administration$/i,
+      })
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("link", {
+        name: /^create user$/i,
+      })
+    ).not.toBeInTheDocument();
+  });
 });

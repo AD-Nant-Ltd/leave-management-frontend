@@ -50,7 +50,10 @@ function DashboardPage() {
       )}
 
       {!isLoading && !error && balance && (
-        <LeaveBalanceSummary balance={balance} />
+        <LeaveBalanceSummary
+          balance={balance}
+          showEmployeeActions
+        />
       )}
 
       {isManager && <ManagerDashboardSection />}
