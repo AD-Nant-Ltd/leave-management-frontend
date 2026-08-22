@@ -3,6 +3,7 @@ import useAuth from "../../hooks/useAuth";
 import leaveService from "../../services/leaveService";
 import LeaveBalanceSummary from "../../components/leave/LeaveBalanceSummary";
 import ManagerDashboardSection from "../../components/manager/ManagerDashboardSection";
+import AdminDashboardSection from "../../components/admin/AdminDashboardSection";
 import { ROLE_IDS } from "../../constants/roles";
 
 function DashboardPage() {
@@ -27,7 +28,11 @@ function DashboardPage() {
     loadLeaveBalance();
   }, [token]);
 
-  const isManager = user?.role_id === ROLE_IDS.MANAGER;
+  const isManager =
+    user?.role_id === ROLE_IDS.MANAGER;
+
+  const isAdmin =
+    user?.role_id === ROLE_IDS.ADMIN;
 
   return (
     <div>
@@ -36,19 +41,21 @@ function DashboardPage() {
       {isLoading && <p>Loading leave balance...</p>}
 
       {error && (
-        <div className="alert alert-danger" role="alert">
+        <div
+          className="alert alert-danger"
+          role="alert"
+        >
           {error}
         </div>
       )}
 
       {!isLoading && !error && balance && (
-        <LeaveBalanceSummary
-          balance={balance}
-          showEmployeeActions
-        />
+        <LeaveBalanceSummary balance={balance} />
       )}
 
       {isManager && <ManagerDashboardSection />}
+
+      {isAdmin && <AdminDashboardSection />}
     </div>
   );
 }

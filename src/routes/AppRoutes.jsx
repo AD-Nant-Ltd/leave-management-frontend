@@ -3,6 +3,7 @@ import PublicLayout from "../layouts/PublicLayout";
 import AppLayout from "../layouts/AppLayout";
 import ProtectedRoute from "./ProtectedRoute";
 import ManagerRoute from "./ManagerRoute";
+import AdminRoute from "./AdminRoute";
 
 import LoginPage from "../pages/auth/LoginPage";
 import DashboardPage from "../pages/employee/DashboardPage";
@@ -10,6 +11,7 @@ import RequestLeavePage from "../pages/employee/RequestLeavePage";
 import MyLeaveRequestsPage from "../pages/employee/MyLeaveRequestsPage";
 import OutstandingLeaveRequestsPage from "../pages/manager/OutstandingLeaveRequestsPage";
 import StaffLeaveBalancesPage from "../pages/manager/StaffLeaveBalancesPage";
+import CreateUserPage from "../pages/admin/CreateUserPage";
 
 function AppRoutes() {
   return (
@@ -41,6 +43,13 @@ function AppRoutes() {
             <Route
               path="/manager/staff-balances"
               element={<StaffLeaveBalancesPage />}
+            />
+          </Route>
+
+          <Route element={<AdminRoute />}>
+            <Route
+              path="/admin/users/create"
+              element={<CreateUserPage />}
             />
           </Route>
         </Route>
