@@ -14,8 +14,22 @@ async function createUser(token, userData) {
   return response.data;
 }
 
+async function getOutstandingLeaveRequests(token) {
+  const response = await apiClient.get(
+    "/admin/leave-requests/outstanding",
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return response.data;
+}
+
 const adminService = {
   createUser,
+  getOutstandingLeaveRequests,
 };
 
 export default adminService;

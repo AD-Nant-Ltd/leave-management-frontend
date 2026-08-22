@@ -33,6 +33,28 @@ function AdminDashboardSection() {
             </div>
           </div>
         </div>
+
+        <div className="col-12 col-md-6">
+          <div className="card h-100">
+            <div className="card-body">
+              <h3 className="h5">
+                Outstanding Requests
+              </h3>
+
+              <p className="text-muted">
+                View all outstanding leave requests across
+                the organisation.
+              </p>
+
+              <Link
+                to="/admin/reports/outstanding-requests"
+                className="btn btn-primary"
+              >
+                View Report
+              </Link>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );

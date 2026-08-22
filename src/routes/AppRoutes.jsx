@@ -9,9 +9,12 @@ import LoginPage from "../pages/auth/LoginPage";
 import DashboardPage from "../pages/employee/DashboardPage";
 import RequestLeavePage from "../pages/employee/RequestLeavePage";
 import MyLeaveRequestsPage from "../pages/employee/MyLeaveRequestsPage";
+
 import OutstandingLeaveRequestsPage from "../pages/manager/OutstandingLeaveRequestsPage";
 import StaffLeaveBalancesPage from "../pages/manager/StaffLeaveBalancesPage";
+
 import CreateUserPage from "../pages/admin/CreateUserPage";
+import OutstandingRequestsReportPage from "../pages/admin/OutstandingRequestsReportPage";
 
 function AppRoutes() {
   return (
@@ -22,7 +25,10 @@ function AppRoutes() {
 
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
-          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route
+            path="/dashboard"
+            element={<DashboardPage />}
+          />
 
           <Route
             path="/leave/request"
@@ -50,6 +56,11 @@ function AppRoutes() {
             <Route
               path="/admin/users/create"
               element={<CreateUserPage />}
+            />
+
+            <Route
+              path="/admin/reports/outstanding-requests"
+              element={<OutstandingRequestsReportPage />}
             />
           </Route>
         </Route>
