@@ -340,6 +340,32 @@ describe("DashboardPage", () => {
     );
   });
 
+  test("shows system usage navigation for an admin", async () => {
+    mockUser.mockReturnValue({
+      id: 3,
+      first_name: "Alex",
+      surname: "Admin",
+      role_id: 3,
+    });
+
+    mockGetLeaveBalance.mockResolvedValue({
+      annual_allowance: 25,
+      days_used: 5,
+      days_remaining: 20,
+    });
+
+    renderDashboardPage();
+
+    expect(
+      await screen.findByRole("link", {
+        name: /view system usage/i,
+      })
+    ).toHaveAttribute(
+      "href",
+      "/admin/reports/system-usage"
+    );
+  });
+
   test("does not show the administration section for an employee", async () => {
     mockUser.mockReturnValue({
       id: 1,
@@ -373,6 +399,12 @@ describe("DashboardPage", () => {
     expect(
       screen.queryByRole("link", {
         name: /view report/i,
+      })
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("link", {
+        name: /view system usage/i,
       })
     ).not.toBeInTheDocument();
   });
@@ -412,6 +444,12 @@ describe("DashboardPage", () => {
     expect(
       screen.queryByRole("link", {
         name: /view report/i,
+      })
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("link", {
+        name: /view system usage/i,
       })
     ).not.toBeInTheDocument();
   });
