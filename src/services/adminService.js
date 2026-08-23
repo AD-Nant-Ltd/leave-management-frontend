@@ -27,9 +27,23 @@ async function getOutstandingLeaveRequests(token) {
   return response.data;
 }
 
+async function getSystemUsageReport(token) {
+  const response = await apiClient.get(
+    "/admin/reports/system-usage",
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return response.data;
+}
+
 const adminService = {
   createUser,
   getOutstandingLeaveRequests,
+  getSystemUsageReport,
 };
 
 export default adminService;

@@ -14,7 +14,7 @@ function AdminDashboardSection() {
       </h2>
 
       <div className="row g-3">
-        <div className="col-12 col-md-6">
+        <div className="col-12 col-md-6 col-xl-4">
           <div className="card h-100">
             <div className="card-body">
               <h3 className="h5">Create User</h3>
@@ -34,7 +34,7 @@ function AdminDashboardSection() {
           </div>
         </div>
 
-        <div className="col-12 col-md-6">
+        <div className="col-12 col-md-6 col-xl-4">
           <div className="card h-100">
             <div className="card-body">
               <h3 className="h5">
@@ -51,6 +51,28 @@ function AdminDashboardSection() {
                 className="btn btn-primary"
               >
                 View Report
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        <div className="col-12 col-md-6 col-xl-4">
+          <div className="card h-100">
+            <div className="card-body">
+              <h3 className="h5">
+                System Usage
+              </h3>
+
+              <p className="text-muted">
+                View leave request totals and system usage
+                statistics.
+              </p>
+
+              <Link
+                to="/admin/reports/system-usage"
+                className="btn btn-primary"
+              >
+                View System Usage
               </Link>
             </div>
           </div>

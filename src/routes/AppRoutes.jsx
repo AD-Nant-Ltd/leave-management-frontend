@@ -15,6 +15,7 @@ import StaffLeaveBalancesPage from "../pages/manager/StaffLeaveBalancesPage";
 
 import CreateUserPage from "../pages/admin/CreateUserPage";
 import OutstandingRequestsReportPage from "../pages/admin/OutstandingRequestsReportPage";
+import SystemUsageReportPage from "../pages/admin/SystemUsageReportPage";
 
 function AppRoutes() {
   return (
@@ -61,6 +62,11 @@ function AppRoutes() {
             <Route
               path="/admin/reports/outstanding-requests"
               element={<OutstandingRequestsReportPage />}
+            />
+
+            <Route
+              path="/admin/reports/system-usage"
+              element={<SystemUsageReportPage />}
             />
           </Route>
         </Route>
