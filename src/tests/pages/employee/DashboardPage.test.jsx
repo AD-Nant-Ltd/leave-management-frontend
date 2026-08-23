@@ -314,6 +314,32 @@ describe("DashboardPage", () => {
     );
   });
 
+  test("shows outstanding requests report navigation for an admin", async () => {
+    mockUser.mockReturnValue({
+      id: 3,
+      first_name: "Alex",
+      surname: "Admin",
+      role_id: 3,
+    });
+
+    mockGetLeaveBalance.mockResolvedValue({
+      annual_allowance: 25,
+      days_used: 5,
+      days_remaining: 20,
+    });
+
+    renderDashboardPage();
+
+    expect(
+      await screen.findByRole("link", {
+        name: /view report/i,
+      })
+    ).toHaveAttribute(
+      "href",
+      "/admin/reports/outstanding-requests"
+    );
+  });
+
   test("does not show the administration section for an employee", async () => {
     mockUser.mockReturnValue({
       id: 1,
@@ -341,6 +367,12 @@ describe("DashboardPage", () => {
     expect(
       screen.queryByRole("link", {
         name: /^create user$/i,
+      })
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("link", {
+        name: /view report/i,
       })
     ).not.toBeInTheDocument();
   });
@@ -374,6 +406,12 @@ describe("DashboardPage", () => {
     expect(
       screen.queryByRole("link", {
         name: /^create user$/i,
+      })
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("link", {
+        name: /view report/i,
       })
     ).not.toBeInTheDocument();
   });
