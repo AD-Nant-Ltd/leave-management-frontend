@@ -14,13 +14,21 @@ async function createUser(token, userData) {
   return response.data;
 }
 
-async function getOutstandingLeaveRequests(token) {
+async function getOutstandingLeaveRequests(
+  token,
+  staffId = null
+) {
   const response = await apiClient.get(
     "/admin/leave-requests/outstanding",
     {
       headers: {
         Authorization: `Bearer ${token}`,
       },
+      params: staffId
+        ? {
+            staff_id: staffId,
+          }
+        : {},
     }
   );
 

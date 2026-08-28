@@ -10,7 +10,13 @@ function OutstandingRequestsReportPage() {
   const { token } = useAuth();
 
   const [requests, setRequests] = useState([]);
+  const [staffOptions, setStaffOptions] = useState([]);
+  const [selectedStaffId, setSelectedStaffId] =
+    useState("");
+
   const [isLoading, setIsLoading] = useState(true);
+  const [isFiltering, setIsFiltering] = useState(false);
+
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -32,7 +38,27 @@ function OutstandingRequestsReportPage() {
             token
           );
 
-        setRequests(response.data);
+        const outstandingRequests = response.data || [];
+
+        setRequests(outstandingRequests);
+
+        const uniqueStaff = Array.from(
+          new Map(
+            outstandingRequests
+              .filter((request) => request.user)
+              .map((request) => [
+                request.user.id,
+                {
+                  id: request.user.id,
+                  name: `${request.user.first_name} ${request.user.surname}`,
+                },
+              ])
+          ).values()
+        ).sort((a, b) =>
+          a.name.localeCompare(b.name)
+        );
+
+        setStaffOptions(uniqueStaff);
       } catch (error) {
         const apiMessage =
           error.response?.data?.error ||
@@ -47,6 +73,34 @@ function OutstandingRequestsReportPage() {
 
     loadOutstandingRequests();
   }, [token]);
+
+  async function handleStaffFilterChange(event) {
+    const staffId = event.target.value;
+
+    setSelectedStaffId(staffId);
+    setError("");
+    setSuccess("");
+    setIsFiltering(true);
+
+    try {
+      const response =
+        await adminService.getOutstandingLeaveRequests(
+          token,
+          staffId || null
+        );
+
+      setRequests(response.data || []);
+    } catch (error) {
+      const apiMessage =
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        "Unable to filter outstanding leave requests.";
+
+      setError(apiMessage);
+    } finally {
+      setIsFiltering(false);
+    }
+  }
 
   function formatDate(date) {
     if (!date) {
@@ -146,8 +200,44 @@ function OutstandingRequestsReportPage() {
         </Link>
       </div>
 
+      {!isLoading && staffOptions.length > 0 && (
+        <div className="mb-4">
+          <label
+            htmlFor="staff-filter"
+            className="form-label"
+          >
+            Filter by staff member
+          </label>
+
+          <select
+            id="staff-filter"
+            className="form-select"
+            value={selectedStaffId}
+            onChange={handleStaffFilterChange}
+            disabled={isFiltering}
+          >
+            <option value="">All staff</option>
+
+            {staffOptions.map((staffMember) => (
+              <option
+                key={staffMember.id}
+                value={staffMember.id}
+              >
+                {staffMember.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
       {isLoading && (
         <p>Loading outstanding requests...</p>
+      )}
+
+      {isFiltering && (
+        <p role="status">
+          Filtering outstanding requests...
+        </p>
       )}
 
       {error && (
@@ -169,18 +259,21 @@ function OutstandingRequestsReportPage() {
       )}
 
       {!isLoading &&
+        !isFiltering &&
         !error &&
         requests.length === 0 && (
           <div
             className="alert alert-info"
             role="status"
           >
-            There are currently no outstanding leave
-            requests.
+            {selectedStaffId
+              ? "There are currently no outstanding leave requests for this staff member."
+              : "There are currently no outstanding leave requests."}
           </div>
         )}
 
       {!isLoading &&
+        !isFiltering &&
         requests.length > 0 && (
           <div className="table-responsive">
             <table className="table table-striped align-middle">
@@ -266,30 +359,30 @@ function OutstandingRequestsReportPage() {
           </div>
         )}
 
-<ConfirmationModal
-  show={requestToApprove !== null}
-  title="Approve Leave Request"
-  message="Are you sure you want to approve this leave request?"
-  confirmLabel="Approve Leave"
-  cancelLabel="Keep Pending"
-  onConfirm={handleApprove}
-  onCancel={() => setRequestToApprove(null)}
-  isProcessing={
-    requestToApprove !== null &&
-    approvingId === requestToApprove.id
-  }
-/>
+      <ConfirmationModal
+        show={requestToApprove !== null}
+        title="Approve Leave Request"
+        message="Are you sure you want to approve this leave request?"
+        confirmLabel="Approve Leave"
+        cancelLabel="Keep Pending"
+        onConfirm={handleApprove}
+        onCancel={() => setRequestToApprove(null)}
+        isProcessing={
+          requestToApprove !== null &&
+          approvingId === requestToApprove.id
+        }
+      />
 
-<RejectLeaveModal
-  show={requestToReject !== null}
-  request={requestToReject}
-  onConfirm={handleReject}
-  onCancel={() => setRequestToReject(null)}
-  isProcessing={
-    requestToReject !== null &&
-    rejectingId === requestToReject.id
-  }
-/>
+      <RejectLeaveModal
+        show={requestToReject !== null}
+        request={requestToReject}
+        onConfirm={handleReject}
+        onCancel={() => setRequestToReject(null)}
+        isProcessing={
+          requestToReject !== null &&
+          rejectingId === requestToReject.id
+        }
+      />
     </div>
   );
 }
