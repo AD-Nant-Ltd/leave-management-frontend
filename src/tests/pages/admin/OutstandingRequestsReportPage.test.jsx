@@ -1,4 +1,8 @@
-import { render, screen } from "@testing-library/react";
+import {
+  render,
+  screen,
+  within,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import {
@@ -62,6 +66,10 @@ function pendingRequest() {
   };
 }
 
+async function findRequestTable() {
+  return screen.findByRole("table");
+}
+
 describe("OutstandingRequestsReportPage", () => {
   beforeEach(() => {
     mockGetOutstandingLeaveRequests.mockReset();
@@ -112,28 +120,30 @@ describe("OutstandingRequestsReportPage", () => {
 
     renderPage();
 
+    const table = await findRequestTable();
+
     expect(
-      await screen.findByText("Test Employee")
+      within(table).getByText("Test Employee")
     ).toBeInTheDocument();
 
     expect(
-      screen.getByText("01/09/2026")
+      within(table).getByText("01/09/2026")
     ).toBeInTheDocument();
 
     expect(
-      screen.getByText("03/09/2026")
+      within(table).getByText("03/09/2026")
     ).toBeInTheDocument();
 
     expect(
-      screen.getByText("3")
+      within(table).getByText("3")
     ).toBeInTheDocument();
 
     expect(
-      screen.getByText("Pending")
+      within(table).getByText("Pending")
     ).toBeInTheDocument();
 
     expect(
-      screen.getByText("20/08/2026")
+      within(table).getByText("20/08/2026")
     ).toBeInTheDocument();
   });
 
@@ -144,7 +154,7 @@ describe("OutstandingRequestsReportPage", () => {
 
     renderPage();
 
-    await screen.findByText("Test Employee");
+    await findRequestTable();
 
     expect(
       screen.getByRole("columnheader", {
@@ -212,20 +222,22 @@ describe("OutstandingRequestsReportPage", () => {
 
     renderPage();
 
+    const table = await findRequestTable();
+
     expect(
-      await screen.findByText("Test Employee")
+      within(table).getByText("Test Employee")
     ).toBeInTheDocument();
 
     expect(
-      screen.getByText("Another Employee")
+      within(table).getByText("Another Employee")
     ).toBeInTheDocument();
 
     expect(
-      screen.getByText("05/10/2026")
+      within(table).getByText("05/10/2026")
     ).toBeInTheDocument();
 
     expect(
-      screen.getByText("06/10/2026")
+      within(table).getByText("06/10/2026")
     ).toBeInTheDocument();
   });
 
@@ -297,7 +309,7 @@ describe("OutstandingRequestsReportPage", () => {
 
     renderPage();
 
-    await screen.findByText("Test Employee");
+    await findRequestTable();
 
     expect(
       screen.getByRole("button", {
@@ -321,7 +333,7 @@ describe("OutstandingRequestsReportPage", () => {
 
     renderPage();
 
-    await screen.findByText("Test Employee");
+    await findRequestTable();
 
     await user.click(
       screen.getByRole("button", {
@@ -351,7 +363,7 @@ describe("OutstandingRequestsReportPage", () => {
 
     renderPage();
 
-    await screen.findByText("Test Employee");
+    await findRequestTable();
 
     await user.click(
       screen.getByRole("button", {
@@ -365,8 +377,10 @@ describe("OutstandingRequestsReportPage", () => {
       })
     );
 
+    const table = screen.getByRole("table");
+
     expect(
-      screen.getByText("Test Employee")
+      within(table).getByText("Test Employee")
     ).toBeInTheDocument();
 
     expect(
@@ -387,7 +401,7 @@ describe("OutstandingRequestsReportPage", () => {
 
     renderPage();
 
-    await screen.findByText("Test Employee");
+    await findRequestTable();
 
     await user.click(
       screen.getByRole("button", {
@@ -426,7 +440,7 @@ describe("OutstandingRequestsReportPage", () => {
 
     renderPage();
 
-    await screen.findByText("Test Employee");
+    await findRequestTable();
 
     await user.click(
       screen.getByRole("button", {
@@ -447,8 +461,14 @@ describe("OutstandingRequestsReportPage", () => {
     ).toBeInTheDocument();
 
     expect(
-      screen.queryByText("Test Employee")
+      screen.queryByRole("table")
     ).not.toBeInTheDocument();
+
+    expect(
+      screen.getByRole("option", {
+        name: "Test Employee",
+      })
+    ).toBeInTheDocument();
   });
 
   test("displays success feedback after approval", async () => {
@@ -464,7 +484,7 @@ describe("OutstandingRequestsReportPage", () => {
 
     renderPage();
 
-    await screen.findByText("Test Employee");
+    await findRequestTable();
 
     await user.click(
       screen.getByRole("button", {
@@ -502,7 +522,7 @@ describe("OutstandingRequestsReportPage", () => {
 
     renderPage();
 
-    await screen.findByText("Test Employee");
+    await findRequestTable();
 
     await user.click(
       screen.getByRole("button", {
@@ -522,8 +542,10 @@ describe("OutstandingRequestsReportPage", () => {
       "This request cannot be approved"
     );
 
+    const table = screen.getByRole("table");
+
     expect(
-      screen.getByText("Test Employee")
+      within(table).getByText("Test Employee")
     ).toBeInTheDocument();
   });
 
@@ -540,7 +562,7 @@ describe("OutstandingRequestsReportPage", () => {
 
     renderPage();
 
-    await screen.findByText("Test Employee");
+    await findRequestTable();
 
     await user.click(
       screen.getByRole("button", {
@@ -570,7 +592,7 @@ describe("OutstandingRequestsReportPage", () => {
 
     renderPage();
 
-    await screen.findByText("Test Employee");
+    await findRequestTable();
 
     await user.click(
       screen.getByRole("button", {
@@ -598,7 +620,7 @@ describe("OutstandingRequestsReportPage", () => {
 
     renderPage();
 
-    await screen.findByText("Test Employee");
+    await findRequestTable();
 
     await user.click(
       screen.getByRole("button", {
@@ -612,8 +634,10 @@ describe("OutstandingRequestsReportPage", () => {
       })
     );
 
+    const table = screen.getByRole("table");
+
     expect(
-      screen.getByText("Test Employee")
+      within(table).getByText("Test Employee")
     ).toBeInTheDocument();
 
     expect(
@@ -634,7 +658,7 @@ describe("OutstandingRequestsReportPage", () => {
 
     renderPage();
 
-    await screen.findByText("Test Employee");
+    await findRequestTable();
 
     await user.click(
       screen.getByRole("button", {
@@ -679,7 +703,7 @@ describe("OutstandingRequestsReportPage", () => {
 
     renderPage();
 
-    await screen.findByText("Test Employee");
+    await findRequestTable();
 
     await user.click(
       screen.getByRole("button", {
@@ -715,7 +739,7 @@ describe("OutstandingRequestsReportPage", () => {
 
     renderPage();
 
-    await screen.findByText("Test Employee");
+    await findRequestTable();
 
     await user.click(
       screen.getByRole("button", {
@@ -736,8 +760,14 @@ describe("OutstandingRequestsReportPage", () => {
     ).toBeInTheDocument();
 
     expect(
-      screen.queryByText("Test Employee")
+      screen.queryByRole("table")
     ).not.toBeInTheDocument();
+
+    expect(
+      screen.getByRole("option", {
+        name: "Test Employee",
+      })
+    ).toBeInTheDocument();
   });
 
   test("displays success feedback after rejection", async () => {
@@ -753,7 +783,7 @@ describe("OutstandingRequestsReportPage", () => {
 
     renderPage();
 
-    await screen.findByText("Test Employee");
+    await findRequestTable();
 
     await user.click(
       screen.getByRole("button", {
@@ -791,7 +821,7 @@ describe("OutstandingRequestsReportPage", () => {
 
     renderPage();
 
-    await screen.findByText("Test Employee");
+    await findRequestTable();
 
     await user.click(
       screen.getByRole("button", {
@@ -811,9 +841,11 @@ describe("OutstandingRequestsReportPage", () => {
       "This request cannot be rejected"
     );
 
+    const table = screen.getByRole("table");
+
     expect(
-      screen.getAllByText("Test Employee").length
-    ).toBeGreaterThan(0);
+      within(table).getByText("Test Employee")
+    ).toBeInTheDocument();
   });
 
   test("displays a generic error when rejection fails without an API message", async () => {
@@ -829,7 +861,7 @@ describe("OutstandingRequestsReportPage", () => {
 
     renderPage();
 
-    await screen.findByText("Test Employee");
+    await findRequestTable();
 
     await user.click(
       screen.getByRole("button", {
@@ -848,5 +880,322 @@ describe("OutstandingRequestsReportPage", () => {
     ).toHaveTextContent(
       "Unable to reject leave request."
     );
+  });
+
+  test("displays a staff filter populated from outstanding request users", async () => {
+    mockGetOutstandingLeaveRequests.mockResolvedValue({
+      data: [
+        pendingRequest(),
+        {
+          ...pendingRequest(),
+          id: 11,
+          user_id: 2,
+          user: {
+            id: 2,
+            first_name: "Another",
+            surname: "Employee",
+          },
+        },
+      ],
+    });
+
+    renderPage();
+
+    const filter = await screen.findByRole("combobox", {
+      name: /filter by staff member/i,
+    });
+
+    expect(filter).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("option", {
+        name: /all staff/i,
+      })
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("option", {
+        name: "Test Employee",
+      })
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("option", {
+        name: "Another Employee",
+      })
+    ).toBeInTheDocument();
+  });
+
+  test("displays each staff member only once in the filter", async () => {
+    mockGetOutstandingLeaveRequests.mockResolvedValue({
+      data: [
+        pendingRequest(),
+        {
+          ...pendingRequest(),
+          id: 11,
+        },
+      ],
+    });
+
+    renderPage();
+
+    await screen.findByRole("combobox", {
+      name: /filter by staff member/i,
+    });
+
+    expect(
+      screen.getAllByRole("option", {
+        name: "Test Employee",
+      })
+    ).toHaveLength(1);
+  });
+
+  test("retrieves outstanding requests for the selected staff member", async () => {
+    const user = userEvent.setup();
+
+    mockGetOutstandingLeaveRequests
+      .mockResolvedValueOnce({
+        data: [pendingRequest()],
+      })
+      .mockResolvedValueOnce({
+        data: [pendingRequest()],
+      });
+
+    renderPage();
+
+    const filter = await screen.findByRole("combobox", {
+      name: /filter by staff member/i,
+    });
+
+    await user.selectOptions(filter, "1");
+
+    expect(
+      mockGetOutstandingLeaveRequests
+    ).toHaveBeenNthCalledWith(
+      2,
+      "admin-token",
+      "1"
+    );
+  });
+
+  test("displays the filtered outstanding requests returned by the API", async () => {
+    const user = userEvent.setup();
+
+    const anotherRequest = {
+      ...pendingRequest(),
+      id: 11,
+      user_id: 2,
+      user: {
+        id: 2,
+        first_name: "Another",
+        surname: "Employee",
+      },
+    };
+
+    mockGetOutstandingLeaveRequests
+      .mockResolvedValueOnce({
+        data: [pendingRequest(), anotherRequest],
+      })
+      .mockResolvedValueOnce({
+        data: [anotherRequest],
+      });
+
+    renderPage();
+
+    const filter = await screen.findByRole("combobox", {
+      name: /filter by staff member/i,
+    });
+
+    await user.selectOptions(filter, "2");
+
+    const table = await findRequestTable();
+
+    expect(
+      within(table).getByText("Another Employee")
+    ).toBeInTheDocument();
+
+    expect(
+      within(table).queryByText("Test Employee")
+    ).not.toBeInTheDocument();
+  });
+
+  test("clears the staff filter and returns to company-wide outstanding requests", async () => {
+    const user = userEvent.setup();
+
+    const anotherRequest = {
+      ...pendingRequest(),
+      id: 11,
+      user_id: 2,
+      user: {
+        id: 2,
+        first_name: "Another",
+        surname: "Employee",
+      },
+    };
+
+    mockGetOutstandingLeaveRequests
+      .mockResolvedValueOnce({
+        data: [pendingRequest(), anotherRequest],
+      })
+      .mockResolvedValueOnce({
+        data: [pendingRequest()],
+      })
+      .mockResolvedValueOnce({
+        data: [pendingRequest(), anotherRequest],
+      });
+
+    renderPage();
+
+    const filter = await screen.findByRole("combobox", {
+      name: /filter by staff member/i,
+    });
+
+    await user.selectOptions(filter, "1");
+    await user.selectOptions(filter, "");
+
+    expect(
+      mockGetOutstandingLeaveRequests
+    ).toHaveBeenNthCalledWith(
+      3,
+      "admin-token",
+      null
+    );
+
+    const table = await findRequestTable();
+
+    expect(
+      within(table).getByText("Another Employee")
+    ).toBeInTheDocument();
+
+    expect(
+      within(table).getByText("Test Employee")
+    ).toBeInTheDocument();
+  });
+
+  test("displays a filtered empty state when the selected staff member has no outstanding requests", async () => {
+    const user = userEvent.setup();
+
+    mockGetOutstandingLeaveRequests
+      .mockResolvedValueOnce({
+        data: [pendingRequest()],
+      })
+      .mockResolvedValueOnce({
+        data: [],
+      });
+
+    renderPage();
+
+    const filter = await screen.findByRole("combobox", {
+      name: /filter by staff member/i,
+    });
+
+    await user.selectOptions(filter, "1");
+
+    expect(
+      await screen.findByText(
+        /there are currently no outstanding leave requests for this staff member/i
+      )
+    ).toBeInTheDocument();
+  });
+
+  test("displays an API error when filtering outstanding requests fails", async () => {
+    const user = userEvent.setup();
+
+    mockGetOutstandingLeaveRequests
+      .mockResolvedValueOnce({
+        data: [pendingRequest()],
+      })
+      .mockRejectedValueOnce({
+        response: {
+          data: {
+            error:
+              "Unable to retrieve requests for this staff member",
+          },
+        },
+      });
+
+    renderPage();
+
+    const filter = await screen.findByRole("combobox", {
+      name: /filter by staff member/i,
+    });
+
+    await user.selectOptions(filter, "1");
+
+    expect(
+      await screen.findByRole("alert")
+    ).toHaveTextContent(
+      "Unable to retrieve requests for this staff member"
+    );
+  });
+
+  test("displays a generic error when filtering fails without an API message", async () => {
+    const user = userEvent.setup();
+
+    mockGetOutstandingLeaveRequests
+      .mockResolvedValueOnce({
+        data: [pendingRequest()],
+      })
+      .mockRejectedValueOnce(
+        new Error("Network failure")
+      );
+
+    renderPage();
+
+    const filter = await screen.findByRole("combobox", {
+      name: /filter by staff member/i,
+    });
+
+    await user.selectOptions(filter, "1");
+
+    expect(
+      await screen.findByRole("alert")
+    ).toHaveTextContent(
+      "Unable to filter outstanding leave requests."
+    );
+  });
+
+  test("keeps the selected staff filter after approving a request", async () => {
+    const user = userEvent.setup();
+
+    mockGetOutstandingLeaveRequests
+      .mockResolvedValueOnce({
+        data: [pendingRequest()],
+      })
+      .mockResolvedValueOnce({
+        data: [pendingRequest()],
+      });
+
+    mockApproveLeaveRequest.mockResolvedValue({
+      message: "Leave request approved successfully",
+    });
+
+    renderPage();
+
+    const filter = await screen.findByRole("combobox", {
+      name: /filter by staff member/i,
+    });
+
+    await user.selectOptions(filter, "1");
+
+    await user.click(
+      screen.getByRole("button", {
+        name: /^approve$/i,
+      })
+    );
+
+    await user.click(
+      screen.getByRole("button", {
+        name: /approve leave/i,
+      })
+    );
+
+    expect(filter).toHaveValue("1");
+
+    expect(
+      await screen.findByText(
+        /there are currently no outstanding leave requests for this staff member/i
+      )
+    ).toBeInTheDocument();
   });
 });
