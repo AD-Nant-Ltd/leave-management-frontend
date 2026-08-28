@@ -5,6 +5,7 @@ import managerService from "../../services/managerService";
 import ConfirmationModal from "../../components/common/ConfirmationModal";
 import RejectLeaveModal from "../../components/manager/RejectLeaveModal";
 import StaffLeaveBalanceModal from "../../components/manager/StaffLeaveBalanceModal";
+import leaveReviewService from "../../services/leaveReviewService";
 
 function formatDate(date) {
   return new Intl.DateTimeFormat("en-GB", {
@@ -100,7 +101,7 @@ function OutstandingLeaveRequestsPage() {
     setApprovingId(requestToApprove.id);
 
     try {
-      const response = await managerService.approveLeaveRequest(
+      const response = await leaveReviewService.approveLeaveRequest(
         token,
         requestToApprove.id
       );
@@ -143,7 +144,7 @@ function OutstandingLeaveRequestsPage() {
     setRejectingId(requestToReject.id);
 
     try {
-      const response = await managerService.rejectLeaveRequest(
+      const response = await leaveReviewService.rejectLeaveRequest(
         token,
         requestToReject.id,
         reason

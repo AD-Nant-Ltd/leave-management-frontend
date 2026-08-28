@@ -26,14 +26,18 @@ vi.mock("../../../services/managerService", () => ({
     getOutstandingLeaveRequests: (...args) =>
       mockGetOutstandingLeaveRequests(...args),
 
+    getStaffLeaveBalance: (...args) =>
+      mockGetStaffLeaveBalance(...args),
+  },
+}));
+
+vi.mock("../../../services/leaveReviewService", () => ({
+  default: {
     approveLeaveRequest: (...args) =>
       mockApproveLeaveRequest(...args),
 
     rejectLeaveRequest: (...args) =>
       mockRejectLeaveRequest(...args),
-
-    getStaffLeaveBalance: (...args) =>
-      mockGetStaffLeaveBalance(...args),
   },
 }));
 
