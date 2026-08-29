@@ -67,11 +67,20 @@ function SystemUsageReportPage() {
   }
 
   return (
-    <div>
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h1 className="mb-0">System Usage Report</h1>
+    <div className="app-page">
+      <header className="page-header page-header-with-action">
+        <div>
+          <h1 className="page-title">
+            System Usage Report
+          </h1>
 
-        <div className="d-flex gap-2">
+          <p className="page-subtitle">
+            View current leave request activity across the
+            system.
+          </p>
+        </div>
+
+        <div className="d-flex flex-wrap gap-2">
           <button
             type="button"
             className="btn btn-outline-primary"
@@ -88,7 +97,7 @@ function SystemUsageReportPage() {
             Back to Dashboard
           </Link>
         </div>
-      </div>
+      </header>
 
       {isLoading && (
         <p>Loading system usage report...</p>
@@ -104,85 +113,93 @@ function SystemUsageReportPage() {
       )}
 
       {!isLoading && report && (
-        <div className="row g-3">
-          <div className="col-12 col-md-6 col-xl-4">
-            <div className="card h-100">
-              <div className="card-body">
-                <h2 className="h6">
+        <section
+          className="content-section"
+          aria-labelledby="usage-summary-heading"
+        >
+          <div className="section-header">
+            <h2
+              id="usage-summary-heading"
+              className="section-title"
+            >
+              Usage Summary
+            </h2>
+          </div>
+
+          <div className="row g-3">
+            <div className="col-12 col-md-6 col-xl-4">
+              <div className="summary-card h-100">
+                <h3 className="summary-card-label">
                   Total Requests
-                </h2>
-                <p className="fs-3 mb-0">
+                </h3>
+
+                <p className="summary-card-value">
                   {report.total_requests}
                 </p>
               </div>
             </div>
-          </div>
 
-          <div className="col-12 col-md-6 col-xl-4">
-            <div className="card h-100">
-              <div className="card-body">
-                <h2 className="h6">
+            <div className="col-12 col-md-6 col-xl-4">
+              <div className="summary-card h-100">
+                <h3 className="summary-card-label">
                   Pending Requests
-                </h2>
-                <p className="fs-3 mb-0">
+                </h3>
+
+                <p className="summary-card-value">
                   {report.pending_requests}
                 </p>
               </div>
             </div>
-          </div>
 
-          <div className="col-12 col-md-6 col-xl-4">
-            <div className="card h-100">
-              <div className="card-body">
-                <h2 className="h6">
+            <div className="col-12 col-md-6 col-xl-4">
+              <div className="summary-card h-100">
+                <h3 className="summary-card-label">
                   Approved Requests
-                </h2>
-                <p className="fs-3 mb-0">
+                </h3>
+
+                <p className="summary-card-value">
                   {report.approved_requests}
                 </p>
               </div>
             </div>
-          </div>
 
-          <div className="col-12 col-md-6 col-xl-4">
-            <div className="card h-100">
-              <div className="card-body">
-                <h2 className="h6">
+            <div className="col-12 col-md-6 col-xl-4">
+              <div className="summary-card h-100">
+                <h3 className="summary-card-label">
                   Rejected Requests
-                </h2>
-                <p className="fs-3 mb-0">
+                </h3>
+
+                <p className="summary-card-value">
                   {report.rejected_requests}
                 </p>
               </div>
             </div>
-          </div>
 
-          <div className="col-12 col-md-6 col-xl-4">
-            <div className="card h-100">
-              <div className="card-body">
-                <h2 className="h6">
+            <div className="col-12 col-md-6 col-xl-4">
+              <div className="summary-card h-100">
+                <h3 className="summary-card-label">
                   Cancelled Requests
-                </h2>
-                <p className="fs-3 mb-0">
+                </h3>
+
+                <p className="summary-card-value">
                   {report.cancelled_requests}
                 </p>
               </div>
             </div>
-          </div>
 
-          <div className="col-12 col-md-6 col-xl-4">
-            <div className="card h-100">
-              <div className="card-body">
-                <h2 className="h6">
+            <div className="col-12 col-md-6 col-xl-4">
+              <div className="summary-card h-100">
+                <h3 className="summary-card-label">
                   Approved Leave Days Used
-                </h2>
-                <p className="fs-3 mb-0">
+                </h3>
+
+                <p className="summary-card-value">
                   {report.approved_days_used}
                 </p>
               </div>
             </div>
           </div>
-        </div>
+        </section>
       )}
     </div>
   );
