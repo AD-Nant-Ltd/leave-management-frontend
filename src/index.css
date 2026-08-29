@@ -271,3 +271,60 @@ a:hover {
     padding: 1.25rem;
   }
 }
+
+/* Tables */
+
+.table-panel {
+  overflow: hidden;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.app-table thead th {
+  padding: 0.875rem 1rem;
+  background: #eef3f6;
+  color: var(--color-dark-blue);
+  font-size: 0.875rem;
+  font-weight: 700;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.app-table tbody td {
+  padding: 1rem;
+  border-color: var(--color-border);
+}
+
+.app-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* Status */
+
+.status-badge {
+  display: inline-block;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.status-pending {
+  background: #fff3cd;
+  color: #664d03;
+}
+
+.status-approved {
+  background: #d8f3e7;
+  color: #155b45;
+}
+
+.status-rejected {
+  background: #f8d7da;
+  color: #842029;
+}
+
+.status-cancelled {
+  background: #e9ecef;
+  color: #495057;
+}

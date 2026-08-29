@@ -90,10 +90,19 @@ function MyLeaveRequestsPage() {
     return "—";
   }
 
+  function statusClass(status) {
+    return `status-badge status-${status.toLowerCase()}`;
+  }
+
   return (
-    <div>
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h1 className="mb-0">My Leave Requests</h1>
+    <div className="app-page">
+      <header className="page-header page-header-with-action">
+        <div>
+          <h1 className="page-title">My Leave Requests</h1>
+          <p className="page-subtitle">
+            View the status of your submitted leave requests.
+          </p>
+        </div>
 
         <Link
           to="/dashboard"
@@ -101,7 +110,7 @@ function MyLeaveRequestsPage() {
         >
           Back to Dashboard
         </Link>
-      </div>
+      </header>
 
       {isLoading && <p>Loading leave requests...</p>}
 
@@ -118,48 +127,56 @@ function MyLeaveRequestsPage() {
       )}
 
       {!isLoading && !error && requests.length > 0 && (
-        <div className="table-responsive">
-          <table className="table table-striped align-middle">
-            <thead>
-              <tr>
-                <th scope="col">Start Date</th>
-                <th scope="col">End Date</th>
-                <th scope="col">Status</th>
-                <th scope="col">Reason</th>
-                <th scope="col">Actions</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {requests.map((request) => (
-                <tr key={request.id}>
-                  <td>{formatDate(request.start_date)}</td>
-                  <td>{formatDate(request.end_date)}</td>
-                  <td>{request.status}</td>
-                  <td>{displayReason(request)}</td>
-
-                  <td>
-                    {request.status === "Pending" && (
-                      <button
-                        type="button"
-                        className="btn btn-outline-danger btn-sm"
-                        onClick={() =>
-                          setRequestToCancel(request)
-                        }
-                        disabled={
-                          cancellingId === request.id
-                        }
-                      >
-                        {cancellingId === request.id
-                          ? "Cancelling..."
-                          : "Cancel"}
-                      </button>
-                    )}
-                  </td>
+        <div className="table-panel">
+          <div className="table-responsive">
+            <table className="table app-table align-middle mb-0">
+              <thead>
+                <tr>
+                  <th scope="col">Start Date</th>
+                  <th scope="col">End Date</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Reason</th>
+                  <th scope="col">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+
+              <tbody>
+                {requests.map((request) => (
+                  <tr key={request.id}>
+                    <td>{formatDate(request.start_date)}</td>
+                    <td>{formatDate(request.end_date)}</td>
+
+                    <td>
+                      <span className={statusClass(request.status)}>
+                        {request.status}
+                      </span>
+                    </td>
+
+                    <td>{displayReason(request)}</td>
+
+                    <td>
+                      {request.status === "Pending" && (
+                        <button
+                          type="button"
+                          className="btn btn-outline-danger btn-sm"
+                          onClick={() =>
+                            setRequestToCancel(request)
+                          }
+                          disabled={
+                            cancellingId === request.id
+                          }
+                        >
+                          {cancellingId === request.id
+                            ? "Cancelling..."
+                            : "Cancel"}
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
