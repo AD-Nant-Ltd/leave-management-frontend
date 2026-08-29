@@ -4,6 +4,8 @@ function ConfirmationModal({
   message,
   confirmLabel = "Confirm",
   cancelLabel = "Cancel",
+  confirmVariant = "danger",
+  processingLabel = "Processing...",
   onConfirm,
   onCancel,
   isProcessing = false,
@@ -56,11 +58,11 @@ function ConfirmationModal({
 
               <button
                 type="button"
-                className="btn btn-danger"
+                className={`btn btn-${confirmVariant}`}
                 onClick={onConfirm}
                 disabled={isProcessing}
               >
-                {isProcessing ? "Cancelling..." : confirmLabel}
+                {isProcessing ? processingLabel : confirmLabel}
               </button>
             </div>
           </div>

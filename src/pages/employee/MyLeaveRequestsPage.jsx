@@ -99,6 +99,7 @@ function MyLeaveRequestsPage() {
       <header className="page-header page-header-with-action">
         <div>
           <h1 className="page-title">My Leave Requests</h1>
+
           <p className="page-subtitle">
             View the status of your submitted leave requests.
           </p>
@@ -186,6 +187,8 @@ function MyLeaveRequestsPage() {
         message="Are you sure you want to cancel this leave request?"
         confirmLabel="Cancel Leave"
         cancelLabel="Keep Request"
+        confirmVariant="danger"
+        processingLabel="Cancelling..."
         onConfirm={handleCancel}
         onCancel={handleCloseModal}
         isProcessing={

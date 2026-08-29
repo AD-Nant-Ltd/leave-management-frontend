@@ -179,9 +179,17 @@ function OutstandingLeaveRequestsPage() {
   }
 
   return (
-    <div>
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h1 className="mb-0">Outstanding Leave Requests</h1>
+    <div className="app-page">
+      <header className="page-header page-header-with-action">
+        <div>
+          <h1 className="page-title">
+            Outstanding Leave Requests
+          </h1>
+
+          <p className="page-subtitle">
+            Review and manage pending leave requests from your staff.
+          </p>
+        </div>
 
         <Link
           to="/dashboard"
@@ -189,7 +197,7 @@ function OutstandingLeaveRequestsPage() {
         >
           Back to Dashboard
         </Link>
-      </div>
+      </header>
 
       {success && (
         <div className="alert alert-success" role="status">
@@ -216,88 +224,92 @@ function OutstandingLeaveRequestsPage() {
         )}
 
       {!isLoading && requests.length > 0 && (
-        <div className="table-responsive">
-          <table className="table table-striped align-middle">
-            <thead>
-              <tr>
-                <th scope="col">Employee</th>
-                <th scope="col">Start Date</th>
-                <th scope="col">End Date</th>
-                <th scope="col">Days</th>
-                <th scope="col">Status</th>
-                <th scope="col">Actions</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {requests.map((request) => (
-                <tr key={request.id}>
-                  <td>
-                    {request.user.first_name}{" "}
-                    {request.user.surname}
-                  </td>
-
-                  <td>{formatDate(request.start_date)}</td>
-
-                  <td>{formatDate(request.end_date)}</td>
-
-                  <td>{request.days_requested}</td>
-
-                  <td>{request.status}</td>
-
-                  <td>
-                    <div className="d-flex flex-wrap gap-2">
-                      <button
-                        type="button"
-                        className="btn btn-outline-primary btn-sm"
-                        onClick={() =>
-                          handleViewBalance(request)
-                        }
-                        disabled={
-                          approvingId === request.id ||
-                          rejectingId === request.id
-                        }
-                      >
-                        View Balance
-                      </button>
-
-                      <button
-                        type="button"
-                        className="btn btn-success btn-sm"
-                        onClick={() =>
-                          setRequestToApprove(request)
-                        }
-                        disabled={
-                          approvingId === request.id ||
-                          rejectingId === request.id
-                        }
-                      >
-                        {approvingId === request.id
-                          ? "Approving..."
-                          : "Approve"}
-                      </button>
-
-                      <button
-                        type="button"
-                        className="btn btn-danger btn-sm"
-                        onClick={() =>
-                          setRequestToReject(request)
-                        }
-                        disabled={
-                          approvingId === request.id ||
-                          rejectingId === request.id
-                        }
-                      >
-                        {rejectingId === request.id
-                          ? "Rejecting..."
-                          : "Reject"}
-                      </button>
-                    </div>
-                  </td>
+        <div className="table-panel">
+          <div className="table-responsive">
+            <table className="table app-table align-middle mb-0">
+              <thead>
+                <tr>
+                  <th scope="col">Employee</th>
+                  <th scope="col">Start Date</th>
+                  <th scope="col">End Date</th>
+                  <th scope="col">Days</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+
+              <tbody>
+                {requests.map((request) => (
+                  <tr key={request.id}>
+                    <td>
+                      {request.user.first_name}{" "}
+                      {request.user.surname}
+                    </td>
+
+                    <td>{formatDate(request.start_date)}</td>
+                    <td>{formatDate(request.end_date)}</td>
+                    <td>{request.days_requested}</td>
+
+                    <td>
+                      <span className="status-badge status-pending">
+                        {request.status}
+                      </span>
+                    </td>
+
+                    <td>
+                      <div className="table-actions">
+                        <button
+                          type="button"
+                          className="btn btn-outline-primary btn-sm"
+                          onClick={() =>
+                            handleViewBalance(request)
+                          }
+                          disabled={
+                            approvingId === request.id ||
+                            rejectingId === request.id
+                          }
+                        >
+                          View Balance
+                        </button>
+
+                        <button
+                          type="button"
+                          className="btn btn-success btn-sm"
+                          onClick={() =>
+                            setRequestToApprove(request)
+                          }
+                          disabled={
+                            approvingId === request.id ||
+                            rejectingId === request.id
+                          }
+                        >
+                          {approvingId === request.id
+                            ? "Approving..."
+                            : "Approve"}
+                        </button>
+
+                        <button
+                          type="button"
+                          className="btn btn-outline-danger btn-sm"
+                          onClick={() =>
+                            setRequestToReject(request)
+                          }
+                          disabled={
+                            approvingId === request.id ||
+                            rejectingId === request.id
+                          }
+                        >
+                          {rejectingId === request.id
+                            ? "Rejecting..."
+                            : "Reject"}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
@@ -316,6 +328,8 @@ function OutstandingLeaveRequestsPage() {
         message="Are you sure you want to approve this leave request?"
         confirmLabel="Approve Leave"
         cancelLabel="Keep Pending"
+        confirmVariant="success"
+        processingLabel="Approving..."
         onConfirm={handleApprove}
         onCancel={handleCloseApproveModal}
         isProcessing={

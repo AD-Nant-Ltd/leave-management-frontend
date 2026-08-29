@@ -328,3 +328,20 @@ a:hover {
   background: #e9ecef;
   color: #495057;
 }
+
+/* Table actions */
+
+.table-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.btn-success {
+  --bs-btn-bg: var(--color-green);
+  --bs-btn-border-color: var(--color-green);
+  --bs-btn-hover-bg: #368f87;
+  --bs-btn-hover-border-color: #368f87;
+  --bs-btn-active-bg: #2f7d76;
+  --bs-btn-active-border-color: #2f7d76;
+}
