@@ -233,3 +233,41 @@ a:hover {
   margin-bottom: 1.25rem;
   color: var(--color-muted);
 }
+
+/* Form pages */
+
+.page-header-with-action {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.form-panel {
+  max-width: 640px;
+  padding: 1.5rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.btn-outline-secondary {
+  --bs-btn-color: var(--color-dark-blue);
+  --bs-btn-border-color: var(--color-border);
+  --bs-btn-hover-color: var(--color-dark-blue);
+  --bs-btn-hover-bg: var(--color-light-blue);
+  --bs-btn-hover-border-color: var(--color-main-blue);
+  --bs-btn-active-color: var(--color-dark-blue);
+  --bs-btn-active-bg: var(--color-light-blue);
+  --bs-btn-active-border-color: var(--color-main-blue);
+}
+
+@media (max-width: 575.98px) {
+  .page-header-with-action {
+    flex-direction: column;
+  }
+
+  .form-panel {
+    padding: 1.25rem;
+  }
+}

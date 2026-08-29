@@ -48,66 +48,73 @@ function RequestLeavePage() {
   }
 
   return (
-    <div>
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h1 className="mb-0">Request Leave</h1>
+    <div className="app-page">
+      <header className="page-header page-header-with-action">
+        <div>
+          <h1 className="page-title">Request Leave</h1>
+          <p className="page-subtitle">
+            Submit a new annual leave request.
+          </p>
+        </div>
 
         <Link to="/dashboard" className="btn btn-outline-secondary">
           Back to Dashboard
         </Link>
+      </header>
+
+      <div className="form-panel">
+        {error && (
+          <div className="alert alert-danger" role="alert">
+            {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="alert alert-success" role="status">
+            {success}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <label htmlFor="start-date" className="form-label">
+              Start date
+            </label>
+
+            <input
+              id="start-date"
+              type="date"
+              className="form-control"
+              value={startDate}
+              onChange={(event) => setStartDate(event.target.value)}
+              required
+            />
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="end-date" className="form-label">
+              End date
+            </label>
+
+            <input
+              id="end-date"
+              type="date"
+              className="form-control"
+              value={endDate}
+              onChange={(event) => setEndDate(event.target.value)}
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Submitting..." : "Submit Request"}
+          </button>
+        </form>
       </div>
-
-      {error && (
-        <div className="alert alert-danger" role="alert">
-          {error}
-        </div>
-      )}
-
-      {success && (
-        <div className="alert alert-success" role="status">
-          {success}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label htmlFor="start-date" className="form-label">
-            Start date
-          </label>
-
-          <input
-            id="start-date"
-            type="date"
-            className="form-control"
-            value={startDate}
-            onChange={(event) => setStartDate(event.target.value)}
-            required
-          />
-        </div>
-
-        <div className="mb-3">
-          <label htmlFor="end-date" className="form-label">
-            End date
-          </label>
-
-          <input
-            id="end-date"
-            type="date"
-            className="form-control"
-            value={endDate}
-            onChange={(event) => setEndDate(event.target.value)}
-            required
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="btn btn-primary"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "Submitting..." : "Submit Request"}
-        </button>
-      </form>
     </div>
   );
 }
