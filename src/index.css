@@ -122,3 +122,88 @@ a:hover {
     font-size: 1.75rem;
   }
 }
+
+/* Application pages */
+
+.app-page {
+  width: 100%;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+}
+
+.page-title {
+  margin-bottom: 0.5rem;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.page-subtitle {
+  margin-bottom: 0;
+  color: var(--color-muted);
+}
+
+.page-content > * + * {
+  margin-top: 1.5rem;
+}
+
+/* Content sections */
+
+.content-section {
+  width: 100%;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.section-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.summary-card {
+  padding: 1.5rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.summary-card-label {
+  margin-bottom: 0.75rem;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.summary-card-value {
+  margin: 0;
+  color: var(--color-dark-blue);
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Secondary actions */
+
+.btn-outline-primary {
+  --bs-btn-color: var(--color-main-blue);
+  --bs-btn-border-color: var(--color-main-blue);
+  --bs-btn-hover-bg: var(--color-main-blue);
+  --bs-btn-hover-border-color: var(--color-main-blue);
+  --bs-btn-active-bg: var(--color-dark-blue);
+  --bs-btn-active-border-color: var(--color-dark-blue);
+}
+
+@media (max-width: 575.98px) {
+  .section-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

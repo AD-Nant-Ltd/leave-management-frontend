@@ -28,37 +28,41 @@ function DashboardPage() {
     loadLeaveBalance();
   }, [token]);
 
-  const isManager =
-    user?.role_id === ROLE_IDS.MANAGER;
-
-  const isAdmin =
-    user?.role_id === ROLE_IDS.ADMIN;
+  const isManager = user?.role_id === ROLE_IDS.MANAGER;
+  const isAdmin = user?.role_id === ROLE_IDS.ADMIN;
 
   return (
-    <div>
-      <h1 className="mb-4">Dashboard</h1>
+    <div className="app-page">
+      <header className="page-header">
+        <h1 className="page-title">Dashboard</h1>
+        <p className="page-subtitle">
+          View your leave balance and available actions.
+        </p>
+      </header>
 
-      {isLoading && <p>Loading leave balance...</p>}
+      <div className="page-content">
+        {isLoading && <p>Loading leave balance...</p>}
 
-      {error && (
-        <div
-          className="alert alert-danger"
-          role="alert"
-        >
-          {error}
-        </div>
-      )}
+        {error && (
+          <div
+            className="alert alert-danger"
+            role="alert"
+          >
+            {error}
+          </div>
+        )}
 
-      {!isLoading && !error && balance && (
-        <LeaveBalanceSummary
-          balance={balance}
-          showEmployeeActions
-        />
-      )}
+        {!isLoading && !error && balance && (
+          <LeaveBalanceSummary
+            balance={balance}
+            showEmployeeActions
+          />
+        )}
 
-      {isManager && <ManagerDashboardSection />}
+        {isManager && <ManagerDashboardSection />}
 
-      {isAdmin && <AdminDashboardSection />}
+        {isAdmin && <AdminDashboardSection />}
+      </div>
     </div>
   );
 }
