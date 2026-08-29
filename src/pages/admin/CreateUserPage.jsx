@@ -106,9 +106,15 @@ function CreateUserPage() {
   }
 
   return (
-    <div>
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h1 className="mb-0">Create User</h1>
+    <div className="app-page">
+      <header className="page-header page-header-with-action">
+        <div>
+          <h1 className="page-title">Create User</h1>
+
+          <p className="page-subtitle">
+            Add a new employee, manager, or administrator.
+          </p>
+        </div>
 
         <Link
           to="/dashboard"
@@ -116,7 +122,7 @@ function CreateUserPage() {
         >
           Back to Dashboard
         </Link>
-      </div>
+      </header>
 
       {success && (
         <div className="alert alert-success" role="status">
@@ -130,163 +136,167 @@ function CreateUserPage() {
         </div>
       )}
 
-      <p className="text-muted">
-        <span aria-hidden="true">*</span> Required fields
-      </p>
+      <div className="form-panel">
+        <p className="text-muted mb-4">
+          <span aria-hidden="true">*</span> Required fields
+        </p>
 
-      <form onSubmit={handleSubmit} noValidate>
-        <div className="row g-3">
-          <div className="col-md-6">
-            <label
-              htmlFor="first_name"
-              className="form-label"
-            >
-              First Name <span aria-hidden="true">*</span>
-            </label>
+        <form onSubmit={handleSubmit} noValidate>
+          <div className="row g-3">
+            <div className="col-12 col-md-6">
+              <label
+                htmlFor="first_name"
+                className="form-label"
+              >
+                First Name <span aria-hidden="true">*</span>
+              </label>
 
-            <input
-              id="first_name"
-              name="first_name"
-              type="text"
-              className="form-control"
-              value={formData.first_name}
-              onChange={handleChange}
-              disabled={isSubmitting}
-              required
-            />
-          </div>
+              <input
+                id="first_name"
+                name="first_name"
+                type="text"
+                className="form-control"
+                value={formData.first_name}
+                onChange={handleChange}
+                disabled={isSubmitting}
+                required
+              />
+            </div>
 
-          <div className="col-md-6">
-            <label
-              htmlFor="surname"
-              className="form-label"
-            >
-              Surname <span aria-hidden="true">*</span>
-            </label>
+            <div className="col-12 col-md-6">
+              <label
+                htmlFor="surname"
+                className="form-label"
+              >
+                Surname <span aria-hidden="true">*</span>
+              </label>
 
-            <input
-              id="surname"
-              name="surname"
-              type="text"
-              className="form-control"
-              value={formData.surname}
-              onChange={handleChange}
-              disabled={isSubmitting}
-              required
-            />
-          </div>
+              <input
+                id="surname"
+                name="surname"
+                type="text"
+                className="form-control"
+                value={formData.surname}
+                onChange={handleChange}
+                disabled={isSubmitting}
+                required
+              />
+            </div>
 
-          <div className="col-md-6">
-            <label
-              htmlFor="email"
-              className="form-label"
-            >
-              Email Address <span aria-hidden="true">*</span>
-            </label>
+            <div className="col-12 col-md-6">
+              <label
+                htmlFor="email"
+                className="form-label"
+              >
+                Email Address <span aria-hidden="true">*</span>
+              </label>
 
-            <input
-              id="email"
-              name="email"
-              type="email"
-              className="form-control"
-              value={formData.email}
-              onChange={handleChange}
-              disabled={isSubmitting}
-              required
-            />
-          </div>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                className="form-control"
+                value={formData.email}
+                onChange={handleChange}
+                disabled={isSubmitting}
+                required
+                autoComplete="email"
+              />
+            </div>
 
-          <div className="col-md-6">
-            <label
-              htmlFor="password"
-              className="form-label"
-            >
-              Password <span aria-hidden="true">*</span>
-            </label>
+            <div className="col-12 col-md-6">
+              <label
+                htmlFor="password"
+                className="form-label"
+              >
+                Password <span aria-hidden="true">*</span>
+              </label>
 
-            <input
-              id="password"
-              name="password"
-              type="password"
-              className="form-control"
-              value={formData.password}
-              onChange={handleChange}
-              disabled={isSubmitting}
-              required
-              minLength={6}
-            />
+              <input
+                id="password"
+                name="password"
+                type="password"
+                className="form-control"
+                value={formData.password}
+                onChange={handleChange}
+                disabled={isSubmitting}
+                required
+                minLength={6}
+                autoComplete="new-password"
+              />
 
-            <div className="form-text">
-              Minimum 6 characters.
+              <div className="form-text">
+                Minimum 6 characters.
+              </div>
+            </div>
+
+            <div className="col-12 col-md-6">
+              <label
+                htmlFor="role_id"
+                className="form-label"
+              >
+                Role <span aria-hidden="true">*</span>
+              </label>
+
+              <select
+                id="role_id"
+                name="role_id"
+                className="form-select"
+                value={formData.role_id}
+                onChange={handleChange}
+                disabled={isSubmitting}
+                required
+              >
+                <option value={ROLE_IDS.EMPLOYEE}>
+                  Employee
+                </option>
+
+                <option value={ROLE_IDS.MANAGER}>
+                  Manager
+                </option>
+
+                <option value={ROLE_IDS.ADMIN}>
+                  Admin
+                </option>
+              </select>
+            </div>
+
+            <div className="col-12 col-md-6">
+              <label
+                htmlFor="annual_leave_balance"
+                className="form-label"
+              >
+                Annual Leave Allowance{" "}
+                <span aria-hidden="true">*</span>
+              </label>
+
+              <input
+                id="annual_leave_balance"
+                name="annual_leave_balance"
+                type="number"
+                min="0"
+                className="form-control"
+                value={formData.annual_leave_balance}
+                onChange={handleChange}
+                disabled={isSubmitting}
+                required
+              />
             </div>
           </div>
 
-          <div className="col-md-6">
-            <label
-              htmlFor="role_id"
-              className="form-label"
-            >
-              Role <span aria-hidden="true">*</span>
-            </label>
-
-            <select
-              id="role_id"
-              name="role_id"
-              className="form-select"
-              value={formData.role_id}
-              onChange={handleChange}
+          <div className="mt-4">
+            <button
+              type="submit"
+              className="btn btn-primary"
               disabled={isSubmitting}
-              required
             >
-              <option value={ROLE_IDS.EMPLOYEE}>
-                Employee
-              </option>
-
-              <option value={ROLE_IDS.MANAGER}>
-                Manager
-              </option>
-
-              <option value={ROLE_IDS.ADMIN}>
-                Admin
-              </option>
-            </select>
+              {isSubmitting
+                ? "Creating User..."
+                : "Create User"}
+            </button>
           </div>
-
-          <div className="col-md-6">
-            <label
-              htmlFor="annual_leave_balance"
-              className="form-label"
-            >
-              Annual Leave Allowance{" "}
-              <span aria-hidden="true">*</span>
-            </label>
-
-            <input
-              id="annual_leave_balance"
-              name="annual_leave_balance"
-              type="number"
-              min="0"
-              className="form-control"
-              value={formData.annual_leave_balance}
-              onChange={handleChange}
-              disabled={isSubmitting}
-              required
-            />
-          </div>
-        </div>
-
-        <div className="mt-4">
-          <button
-            type="submit"
-            className="btn btn-primary"
-            disabled={isSubmitting}
-          >
-            {isSubmitting
-              ? "Creating User..."
-              : "Create User"}
-          </button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 }
