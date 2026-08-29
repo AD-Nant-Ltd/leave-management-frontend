@@ -113,11 +113,19 @@ function StaffLeaveBalancesPage() {
   }
 
   return (
-    <div>
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h1 className="mb-0">Staff Leave Balances</h1>
+    <div className="app-page">
+      <header className="page-header page-header-with-action">
+        <div>
+          <h1 className="page-title">
+            Staff Leave Balances
+          </h1>
 
-        <div className="d-flex gap-2">
+          <p className="page-subtitle">
+            View annual leave balances for employees you manage.
+          </p>
+        </div>
+
+        <div className="d-flex flex-wrap gap-2">
           {staffBalances.length > 0 && (
             <button
               type="button"
@@ -135,7 +143,7 @@ function StaffLeaveBalancesPage() {
             Back to Dashboard
           </Link>
         </div>
-      </div>
+      </header>
 
       {isLoading && <p>Loading staff leave balances...</p>}
 
@@ -160,36 +168,38 @@ function StaffLeaveBalancesPage() {
       {!isLoading &&
         !error &&
         staffBalances.length > 0 && (
-          <div className="table-responsive">
-            <table className="table table-striped align-middle">
-              <thead>
-                <tr>
-                  <th scope="col">Employee</th>
-                  <th scope="col">Annual Allowance</th>
-                  <th scope="col">Leave Taken</th>
-                  <th scope="col">Remaining Leave</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {staffBalances.map((employee) => (
-                  <tr key={employee.id}>
-                    <td>
-                      {employee.first_name}{" "}
-                      {employee.surname}
-                    </td>
-
-                    <td>
-                      {employee.annual_allowance}
-                    </td>
-
-                    <td>{employee.days_used}</td>
-
-                    <td>{employee.days_remaining}</td>
+          <div className="table-panel">
+            <div className="table-responsive">
+              <table className="table app-table align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th scope="col">Employee</th>
+                    <th scope="col">Annual Allowance</th>
+                    <th scope="col">Leave Taken</th>
+                    <th scope="col">Remaining Leave</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+
+                <tbody>
+                  {staffBalances.map((employee) => (
+                    <tr key={employee.id}>
+                      <td>
+                        {employee.first_name}{" "}
+                        {employee.surname}
+                      </td>
+
+                      <td>
+                        {employee.annual_allowance}
+                      </td>
+
+                      <td>{employee.days_used}</td>
+
+                      <td>{employee.days_remaining}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
     </div>
