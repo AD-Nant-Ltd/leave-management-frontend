@@ -1,11 +1,124 @@
+:root {
+  --color-dark-blue: #072744;
+  --color-main-blue: #00587a;
+  --color-bright-blue: #0091d3;
+  --color-light-blue: #a1d9f7;
+  --color-green: #49b8ae;
+  --color-yellow: #fdc300;
+
+  --color-page: #f5f7fa;
+  --color-surface: #ffffff;
+  --color-text: #1f2933;
+  --color-muted: #5f6b76;
+  --color-border: #d9e1e7;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+}
+
 * {
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
 }
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
-  background: #f5f7fa;
-  color: #333;
+  margin: 0;
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+  background: var(--color-page);
+  color: var(--color-text);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--color-dark-blue);
+}
+
+a {
+  color: var(--color-main-blue);
+}
+
+a:hover {
+  color: var(--color-dark-blue);
+}
+
+.form-label {
+  font-weight: 600;
+}
+
+.form-control,
+.form-select {
+  min-height: 44px;
+  border-color: var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--color-bright-blue);
+  box-shadow: 0 0 0 0.2rem rgba(0, 145, 211, 0.2);
+}
+
+.btn-primary {
+  --bs-btn-bg: var(--color-main-blue);
+  --bs-btn-border-color: var(--color-main-blue);
+  --bs-btn-hover-bg: var(--color-dark-blue);
+  --bs-btn-hover-border-color: var(--color-dark-blue);
+  --bs-btn-active-bg: var(--color-dark-blue);
+  --bs-btn-active-border-color: var(--color-dark-blue);
+}
+
+.btn:focus-visible,
+.form-control:focus-visible,
+.form-select:focus-visible {
+  outline: 3px solid var(--color-bright-blue);
+  outline-offset: 2px;
+}
+
+/* Login */
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 2rem 0;
+}
+
+.login-panel {
+  padding: 2rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.login-title {
+  margin-bottom: 0.5rem;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.login-panel .btn {
+  min-height: 44px;
+  font-weight: 600;
+}
+
+@media (max-width: 575.98px) {
+  .login-page {
+    align-items: flex-start;
+    padding-top: 2rem;
+  }
+
+  .login-panel {
+    padding: 1.5rem;
+  }
+
+  .login-title {
+    font-size: 1.75rem;
+  }
 }
