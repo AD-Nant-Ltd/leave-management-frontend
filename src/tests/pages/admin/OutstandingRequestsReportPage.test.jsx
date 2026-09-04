@@ -902,7 +902,7 @@ describe("OutstandingRequestsReportPage", () => {
     renderPage();
 
     const filter = await screen.findByRole("combobox", {
-      name: /filter by staff member/i,
+      name: /staff member/i,
     });
 
     expect(filter).toBeInTheDocument();
@@ -940,7 +940,7 @@ describe("OutstandingRequestsReportPage", () => {
     renderPage();
 
     await screen.findByRole("combobox", {
-      name: /filter by staff member/i,
+      name: /staff member/i,
     });
 
     expect(
@@ -964,7 +964,7 @@ describe("OutstandingRequestsReportPage", () => {
     renderPage();
 
     const filter = await screen.findByRole("combobox", {
-      name: /filter by staff member/i,
+      name: /staff member/i,
     });
 
     await user.selectOptions(filter, "1");
@@ -1003,7 +1003,7 @@ describe("OutstandingRequestsReportPage", () => {
     renderPage();
 
     const filter = await screen.findByRole("combobox", {
-      name: /filter by staff member/i,
+      name: /staff member/i,
     });
 
     await user.selectOptions(filter, "2");
@@ -1047,7 +1047,7 @@ describe("OutstandingRequestsReportPage", () => {
     renderPage();
 
     const filter = await screen.findByRole("combobox", {
-      name: /filter by staff member/i,
+      name: /staff member/i,
     });
 
     await user.selectOptions(filter, "1");
@@ -1086,7 +1086,7 @@ describe("OutstandingRequestsReportPage", () => {
     renderPage();
 
     const filter = await screen.findByRole("combobox", {
-      name: /filter by staff member/i,
+      name: /staff member/i,
     });
 
     await user.selectOptions(filter, "1");
@@ -1117,7 +1117,7 @@ describe("OutstandingRequestsReportPage", () => {
     renderPage();
 
     const filter = await screen.findByRole("combobox", {
-      name: /filter by staff member/i,
+      name: /staff member/i,
     });
 
     await user.selectOptions(filter, "1");
@@ -1143,7 +1143,7 @@ describe("OutstandingRequestsReportPage", () => {
     renderPage();
 
     const filter = await screen.findByRole("combobox", {
-      name: /filter by staff member/i,
+      name: /staff member/i,
     });
 
     await user.selectOptions(filter, "1");
@@ -1173,7 +1173,7 @@ describe("OutstandingRequestsReportPage", () => {
     renderPage();
 
     const filter = await screen.findByRole("combobox", {
-      name: /filter by staff member/i,
+      name: /staff member/i,
     });
 
     await user.selectOptions(filter, "1");

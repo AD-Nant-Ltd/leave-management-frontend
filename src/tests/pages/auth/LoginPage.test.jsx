@@ -33,7 +33,7 @@ describe("LoginPage", () => {
     renderLoginPage();
 
     expect(
-      screen.getByRole("heading", { name: /login/i })
+      screen.getByRole("heading", { name: /sign in/i })
     ).toBeInTheDocument();
 
     expect(

@@ -290,7 +290,7 @@ describe("SystemUsageReportPage", () => {
     );
 
     const pendingCard =
-      pendingHeading.closest(".card");
+      pendingHeading.closest(".summary-card");
 
     expect(pendingCard).not.toBeNull();
 
