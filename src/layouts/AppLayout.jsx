@@ -11,10 +11,12 @@ function AppLayout() {
   }
 
   return (
-    <div>
-      <header className="border-bottom p-3">
-        <div className="container d-flex justify-content-between align-items-center">
-          <span>Leave Management</span>
+    <div className="app-shell">
+      <header className="app-header">
+        <div className="container app-header-inner">
+          <span className="app-name">
+            Leave Management
+          </span>
 
           <button
             type="button"
@@ -26,7 +28,7 @@ function AppLayout() {
         </div>
       </header>
 
-      <main className="container py-4">
+      <main className="container app-main">
         <Outlet />
       </main>
     </div>
