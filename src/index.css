@@ -338,12 +338,12 @@ a:hover {
 }
 
 .btn-success {
-  --bs-btn-bg: var(--color-green);
-  --bs-btn-border-color: var(--color-green);
-  --bs-btn-hover-bg: #368f87;
-  --bs-btn-hover-border-color: #368f87;
-  --bs-btn-active-bg: #2f7d76;
-  --bs-btn-active-border-color: #2f7d76;
+  --bs-btn-bg: #198754;
+  --bs-btn-border-color: #198754;
+  --bs-btn-hover-bg: #157347;
+  --bs-btn-hover-border-color: #146c43;
+  --bs-btn-active-bg: #146c43;
+  --bs-btn-active-border-color: #13653f;
 }
 
 /* Application shell */

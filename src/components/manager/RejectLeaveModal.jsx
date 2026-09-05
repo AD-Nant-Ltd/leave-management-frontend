@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 function RejectLeaveModal({
   show,
@@ -8,6 +8,92 @@ function RejectLeaveModal({
   isProcessing = false,
 }) {
   const [reason, setReason] = useState("");
+
+  const modalRef = useRef(null);
+  const cancelButtonRef = useRef(null);
+  const previouslyFocusedElementRef = useRef(null);
+
+  useEffect(() => {
+    if (!show || !request) {
+      return undefined;
+    }
+
+    // Remember the control that opened the modal so focus can
+    // return to it when the modal closes.
+    previouslyFocusedElementRef.current = document.activeElement;
+
+    const modalElement = modalRef.current;
+
+    if (!modalElement) {
+      return undefined;
+    }
+
+    const getFocusableElements = () =>
+      Array.from(
+        modalElement.querySelectorAll(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+      );
+
+    // Move focus into the modal when it opens.
+    // Prefer the safe/non-destructive action.
+    if (cancelButtonRef.current) {
+      cancelButtonRef.current.focus();
+    } else {
+      modalElement.focus();
+    }
+
+    function handleKeyDown(event) {
+      if (event.key === "Escape" && !isProcessing) {
+        event.preventDefault();
+        setReason("");
+        onCancel();
+        return;
+      }
+
+      if (event.key !== "Tab") {
+        return;
+      }
+
+      const focusableElements = getFocusableElements();
+
+      if (focusableElements.length === 0) {
+        event.preventDefault();
+        modalElement.focus();
+        return;
+      }
+
+      const firstElement = focusableElements[0];
+      const lastElement =
+        focusableElements[focusableElements.length - 1];
+
+      if (
+        event.shiftKey &&
+        document.activeElement === firstElement
+      ) {
+        event.preventDefault();
+        lastElement.focus();
+      }
+
+      if (
+        !event.shiftKey &&
+        document.activeElement === lastElement
+      ) {
+        event.preventDefault();
+        firstElement.focus();
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+
+      if (previouslyFocusedElementRef.current) {
+        previouslyFocusedElementRef.current.focus();
+      }
+    };
+  }, [show, request, isProcessing, onCancel]);
 
   if (!show || !request) {
     return null;
@@ -28,6 +114,7 @@ function RejectLeaveModal({
   return (
     <>
       <div
+        ref={modalRef}
         className="modal fade show d-block"
         tabIndex="-1"
         role="dialog"
@@ -88,6 +175,7 @@ function RejectLeaveModal({
 
               <div className="modal-footer">
                 <button
+                  ref={cancelButtonRef}
                   type="button"
                   className="btn btn-outline-secondary"
                   onClick={handleCancel}

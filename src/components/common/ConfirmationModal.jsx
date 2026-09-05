@@ -1,3 +1,5 @@
+import { useEffect, useRef } from "react";
+
 function ConfirmationModal({
   show,
   title,
@@ -10,6 +12,94 @@ function ConfirmationModal({
   onCancel,
   isProcessing = false,
 }) {
+  const modalRef = useRef(null);
+  const cancelButtonRef = useRef(null);
+  const previouslyFocusedElementRef = useRef(null);
+
+  useEffect(() => {
+    if (!show) {
+      return undefined;
+    }
+
+    // Remember the element that opened the modal so focus can be
+    // returned to it when the modal closes.
+    previouslyFocusedElementRef.current = document.activeElement;
+
+    const modalElement = modalRef.current;
+
+    if (!modalElement) {
+      return undefined;
+    }
+
+    const getFocusableElements = () =>
+      Array.from(
+        modalElement.querySelectorAll(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+      );
+
+    // Move focus into the modal when it opens.
+    // Prefer the non-destructive action.
+    if (cancelButtonRef.current) {
+      cancelButtonRef.current.focus();
+    } else {
+      modalElement.focus();
+    }
+
+    const handleKeyDown = (event) => {
+      // Allow Escape to dismiss the modal when no action is processing.
+      if (event.key === "Escape" && !isProcessing) {
+        event.preventDefault();
+        onCancel();
+        return;
+      }
+
+      if (event.key !== "Tab") {
+        return;
+      }
+
+      const focusableElements = getFocusableElements();
+
+      if (focusableElements.length === 0) {
+        event.preventDefault();
+        modalElement.focus();
+        return;
+      }
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      // Trap Shift + Tab at the beginning of the modal.
+      if (
+        event.shiftKey &&
+        document.activeElement === firstElement
+      ) {
+        event.preventDefault();
+        lastElement.focus();
+      }
+
+      // Trap Tab at the end of the modal.
+      if (
+        !event.shiftKey &&
+        document.activeElement === lastElement
+      ) {
+        event.preventDefault();
+        firstElement.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+
+      // Return focus to the control that originally opened the modal.
+      if (previouslyFocusedElementRef.current) {
+        previouslyFocusedElementRef.current.focus();
+      }
+    };
+  }, [show, isProcessing, onCancel]);
+
   if (!show) {
     return null;
   }
@@ -17,6 +107,7 @@ function ConfirmationModal({
   return (
     <>
       <div
+        ref={modalRef}
         className="modal fade show d-block"
         tabIndex="-1"
         role="dialog"
@@ -48,6 +139,7 @@ function ConfirmationModal({
 
             <div className="modal-footer">
               <button
+                ref={cancelButtonRef}
                 type="button"
                 className="btn btn-outline-secondary"
                 onClick={onCancel}
