@@ -139,4 +139,30 @@ describe("ManagerRoute", () => {
       screen.getByTestId("location")
     ).toHaveTextContent("/dashboard");
   });
+
+  test("redirects an administrator from manager-only routes", async () => {
+    mockAuth.mockReturnValue({
+      user: {
+        id: 3,
+        first_name: "Alex",
+        surname: "Admin",
+        role_id: 3,
+      },
+      isLoading: false,
+    });
+
+    renderManagerRoute();
+
+    expect(
+      await screen.findByText("Dashboard")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByTestId("location")
+    ).toHaveTextContent("/dashboard");
+
+    expect(
+      screen.queryByText("Manager Content")
+    ).not.toBeInTheDocument();
+  });
 });
